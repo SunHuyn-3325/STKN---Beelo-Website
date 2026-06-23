@@ -3,810 +3,551 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Beelo Typing Challenge</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>BeeLo Typing Challenge</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ── Local fonts (only the 2 files that actually exist) ── */
-@font-face {
-  font-family: 'Quicksand';
-  font-weight: 400;
-  font-display: swap;
-  src: url('cdn/fonts/quicksand/quicksand_n4.bf8322a9d1da765aa396ad7b6eeb81930a6214de.woff2') format('woff2');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#fef9f0}
+
+/* ── Shared screen shell ── */
+.screen{
+  position:fixed;inset:0;display:none;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
 }
-@font-face {
-  font-family: 'Quicksand';
-  font-weight: 500;
-  font-display: swap;
-  src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
+.screen.active{display:block}
+
+/* ========================================
+   SCREEN 1 — MAIN SCREEN
+   bg: Main_screen.png (1536×1024 landscape)
+   "START GAME >" button sits bottom-center
+   ======================================== */
+#s-main{ background-image:url('../cdn.shopify.com/s/game_img/Main\ screen.png'); }
+
+.btn-start{
+  position:absolute;
+  /* centre horizontally, ~80% down */
+  left:50%; transform:translateX(-50%);
+  bottom:10%;
+  background:linear-gradient(135deg,#FF9800,#FFC107);
+  color:#fff;
+  border:none;border-radius:60px;
+  padding:clamp(14px,2.5vw,22px) clamp(48px,8vw,90px);
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(1.1rem,2.4vw,1.7rem);
+  letter-spacing:1px;
+  cursor:pointer;
+  box-shadow:0 8px 28px rgba(255,152,0,.5),inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .2s,box-shadow .2s;
+  white-space:nowrap;
+}
+.btn-start:hover{transform:translateX(-50%) translateY(-4px);box-shadow:0 14px 36px rgba(255,152,0,.6)}
+
+/* ========================================
+   SCREEN 2 — GAME
+   bg: Game.png
+   Layout based on image analysis:
+     - BeeLo logo top-left, gear+close top-right (already in bg)
+     - Timer pill  → overlay centered-top (~12% from top)
+     - Progress bar → ~22% from top
+     - White reading card → 28% from top, 18% from left, width ~68%, height ~52%
+     - Input field → ~84% from top, 18% from left, width ~64%
+     - Words Typed box → bottom-right corner
+   ======================================== */
+#s-game{ background-image:url('../cdn.shopify.com/s/game_img/Game.png'); }
+
+/* timer */
+.timer-pill{
+  position:absolute;
+  left:50%;top:7%;transform:translateX(-50%);
+  background:#FFF4D6;border:2.5px solid #FFD54A;border-radius:60px;
+  padding:10px 32px;
+  font-family:'Fredoka One',sans-serif;font-size:clamp(1.3rem,2.8vw,2rem);
+  color:#5B4528;
+  box-shadow:0 4px 16px rgba(255,213,74,.3);
+  white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
 }
 
-:root {
-  --sky: #a8d8ea;
-  --hill1: #8dce5a;
-  --hill2: #5ea33c;
-  --cream: #fffdf0;
-  --yellow: #fdc602;
-  --orange: #ff8c42;
-  --brown: #5b2600;
-  --pink: #ff6b8a;
-  --green: #5ea33c;
-  --fn-display: 'Fredoka One', 'Nunito', 'Quicksand', sans-serif;
-  --fn-body: 'Nunito', 'Quicksand', sans-serif;
+/* progress */
+.progress-wrap{
+  position:absolute;
+  left:18%;top:21%;width:65%;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
-body {
-  min-height: 100vh;
-  font-family: var(--fn-body);
-  background: var(--sky);
-  overflow: hidden;
+.progress-label{
+  font-family:'Nunito',sans-serif;font-size:clamp(.7rem,1.3vw,.95rem);
+  font-weight:800;color:#5B4528;margin-bottom:5px;
+  display:flex;align-items:center;gap:4px;
+}
+.progress-bar{
+  height:14px;background:#EAEAEA;border-radius:20px;overflow:hidden;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.07);
+}
+.progress-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#FFB300,#FFD54A,#FFE68A);
+  border-radius:20px;transition:width .35s ease;
 }
 
-/* ── Nature BG ── */
-.bg {
-  position: fixed; inset: 0; z-index: 0;
-  background: linear-gradient(180deg, #87ceeb 0%, #b8e8f8 52%, #8dce5a 52%, #5ea33c 100%);
+/* reading card overlay */
+.reading-card{
+  position:absolute;
+  left:17%; top:28%; width:67%; height:50%;
+  background:rgba(255,255,255,.88);
+  border:2px dashed #FFD6E7;border-radius:20px;
+  padding:20px 22px;
+  overflow-y:auto;
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(.85rem,1.5vw,1.1rem);
+  line-height:1.9;
+  color:#B8B8B8;
+  word-break:break-word;
 }
-.bg::before {
-  content: '';
-  position: absolute; bottom: 0; left: -8%; width: 58%; height: 44%;
-  background: #8dce5a;
-  border-radius: 50% 50% 0 0 / 65% 65% 0 0;
-}
-.bg::after {
-  content: '';
-  position: absolute; bottom: 0; right: -4%; width: 52%; height: 36%;
-  background: #5ea33c;
-  border-radius: 50% 50% 0 0 / 65% 65% 0 0;
-}
-.bg-sun {
-  position: fixed; top: 5%; right: 7%;
-  width: 72px; height: 72px;
-  background: radial-gradient(circle, #ffe066, #fdc602);
-  border-radius: 50%;
-  box-shadow: 0 0 0 10px #ffe06644, 0 0 0 22px #fdc60222;
-  z-index: 1;
-}
-.bg-rainbow {
-  position: fixed; top: 2%; right: 12%;
-  width: 160px; height: 80px;
-  border-radius: 80px 80px 0 0;
-  background: transparent;
-  border: 12px solid #e84393;
-  border-bottom: none;
-  box-shadow: 0 -12px 0 #ff8c00, 0 -24px 0 #ffd700, 0 -36px 0 #00b050, 0 -48px 0 #0070c0;
-  z-index: 1; opacity: .75;
-}
-.bg-cloud {
-  position: fixed; z-index: 1;
-  background: #fff; border-radius: 50px;
-}
-.bg-cloud::before, .bg-cloud::after {
-  content: ''; position: absolute;
-  background: #fff; border-radius: 50%;
-}
-.cloud1 { width:110px; height:36px; top:9%; left:4%; }
-.cloud1::before { width:54px; height:50px; top:-26px; left:14px; }
-.cloud1::after  { width:42px; height:42px; top:-18px; left:48px; }
-.cloud2 { width:85px; height:28px; top:15%; left:24%; }
-.cloud2::before { width:42px; height:38px; top:-20px; left:10px; }
-.cloud2::after  { width:34px; height:34px; top:-14px; left:36px; }
-.cloud3 { width:95px; height:32px; top:7%; right:33%; }
-.cloud3::before { width:46px; height:44px; top:-22px; left:13px; }
-.cloud3::after  { width:38px; height:38px; top:-16px; left:42px; }
-.bg-flowers {
-  position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
-  z-index: 1; display: flex; align-items: flex-end;
-  padding: 0 4%; gap: 32px; pointer-events: none;
-}
-.flower { font-size: 1.8rem; animation: sway 3s ease-in-out infinite; line-height: 1; }
-.flower:nth-child(2){animation-delay:.4s}.flower:nth-child(3){animation-delay:.9s;font-size:1.5rem}
-.flower:nth-child(4){animation-delay:1.4s;margin-left:auto}.flower:nth-child(5){animation-delay:.7s}
-@keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes pop{from{transform:scale(1.5);opacity:0}to{transform:scale(1);opacity:1}}
+.reading-card::-webkit-scrollbar{width:6px}
+.reading-card::-webkit-scrollbar-thumb{background:#FFD54A;border-radius:4px}
 
-/* ── Screen wrapper ── */
-.screen {
-  position: fixed; inset: 0; z-index: 10;
-  display: none; align-items: center; justify-content: center;
-  padding: 16px;
+/* word states */
+.word{display:inline}
+.word.correct{
+  background:linear-gradient(90deg,#FF8A65,#FFD54A,#9CCC65,#64B5F6,#BA68C8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;font-weight:900;
 }
-.screen.active { display: flex; }
+.word.current{
+  background:#FFF4B0;color:#5B4528;
+  -webkit-text-fill-color:#5B4528;
+  border-radius:8px;padding:1px 6px;font-weight:800;
+  animation:pulse 1.4s ease-in-out infinite;
+}
+.word.wrong{
+  color:#FF6B6B;-webkit-text-fill-color:#FF6B6B;
+  background:#FFE5E5;border-radius:4px;padding:1px 4px;font-weight:800;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
 
-/* ════════════════════════════════
-   INTRO SCREEN
-════════════════════════════════ */
-#screen-intro .card {
-  background: #fffef5;
-  border-radius: 28px;
-  box-shadow: 0 8px 40px rgba(91,38,0,.15);
-  padding: 36px 44px 44px;
-  max-width: 660px; width: 100%;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 14px; text-align: center;
-  position: relative;
+/* typing input */
+.typing-input{
+  position:absolute;
+  left:17%;bottom:9%;width:64%;
+  background:#fff;border:2.5px solid #FFD54A;border-radius:20px;
+  padding:clamp(12px,1.8vw,18px) clamp(14px,2vw,22px);
+  font-family:'Nunito',sans-serif;font-size:clamp(.9rem,1.6vw,1.1rem);
+  color:#5B4528;outline:none;
+  box-shadow:0 4px 16px rgba(255,213,74,.2);
+  transition:border-color .2s,box-shadow .2s;
 }
-.intro-bee {
-  font-size: 88px;
-  animation: float 2.8s ease-in-out infinite;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,.12));
+.typing-input::placeholder{color:#ccc}
+.typing-input:focus{border-color:#FF9800;box-shadow:0 0 0 3px rgba(255,152,0,.15)}
+.typing-input.error{border-color:#FF6B6B;box-shadow:0 0 0 3px rgba(255,107,107,.15);background:#FFF5F5}
+
+/* words-typed counter box (bottom-right) */
+.words-typed-box{
+  position:absolute;
+  right:3.5%;bottom:7%;
+  background:#FEF5E8;border:2px solid #FFD54A;border-radius:16px;
+  padding:10px 14px;text-align:center;min-width:90px;
+  box-shadow:0 4px 14px rgba(255,213,74,.25);
 }
-.intro-title {
-  font-family: var(--fn-display);
-  line-height: 1.1; letter-spacing: 1px;
+.words-typed-label{
+  font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:900;
+  color:#5B4528;text-transform:uppercase;line-height:1.3;
 }
-.intro-beelo {
-  font-size: clamp(2.6rem, 6vw, 3.8rem);
-  display: block;
-  background: linear-gradient(135deg, #ff8c00, #ffd020, #8dce5a, #00aacc);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.intro-challenge {
-  font-family: var(--fn-display);
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
-  color: var(--brown); letter-spacing: 3px;
-  display: block; margin-top: 2px;
-}
-.intro-desc {
-  font-size: .97rem; color: #555; line-height: 1.65;
-  max-width: 460px;
-}
-.intro-desc strong { color: var(--brown); }
-.intro-rewards {
-  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
-}
-.intro-rewards span {
-  padding: 5px 14px; border-radius: 20px;
-  font-size: .78rem; font-weight: 800; color: #fff;
-}
-.rew-1{background:#ff8c42}.rew-2{background:#a855f7}.rew-3{background:#e8275a}
-.btn-start {
-  margin-top: 4px;
-  background: linear-gradient(135deg, #ff8c42, #ffd020);
-  color: #5b2600; border: none; border-radius: 50px;
-  padding: 15px 52px;
-  font-family: var(--fn-body); font-size: 1.15rem; font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 4px 18px rgba(255,140,66,.5);
-  transition: transform .15s, box-shadow .15s;
-  letter-spacing: .5px;
-}
-.btn-start:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(255,140,66,.6)}
-.intro-gift {
-  position: absolute; right: -14px; bottom: 36px;
-  font-size: 3.2rem;
-  animation: float 3.5s ease-in-out 1s infinite;
+.words-typed-num{
+  font-family:'Fredoka One',sans-serif;font-size:2rem;
+  background:linear-gradient(135deg,#FF8A65,#BA68C8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1.1;
 }
 
-/* ════════════════════════════════
-   COUNTDOWN SCREEN
-════════════════════════════════ */
-#screen-countdown{flex-direction:column;gap:16px}
-.countdown-num {
-  font-family: var(--fn-display);
-  font-size: clamp(7rem, 22vw, 14rem);
-  color: #fff;
-  text-shadow: 0 8px 30px rgba(91,38,0,.25);
-  line-height: 1; animation: pop .4s ease;
-}
-.countdown-label{font-size:1.3rem;color:#fff;font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.2)}
+/* ========================================
+   SCREEN 3 — RESULT
+   bg: Result.png
+   "Great Job!" banner already in bg image
+   Overlay: score number inside the cream box (~55%-77% from top)
+   Button "Hãy nhận quà ngay" near bottom
+   ======================================== */
+#s-result{ background-image:url('Result.png'); }
 
-/* ════════════════════════════════
-   GAME SCREEN
-════════════════════════════════ */
-#screen-game{align-items:stretch;padding:10px 14px}
-.game-wrap {
-  background: #fffef5;
-  border-radius: 24px;
-  box-shadow: 0 8px 40px rgba(91,38,0,.14);
-  width: 100%; max-width: 940px; max-height: calc(100vh - 20px);
-  display: flex; flex-direction: column; overflow: hidden;
+/* score number inside the pale yellow box in the card */
+.result-score-overlay{
+  position:absolute;
+  left:50%;top:54%;transform:translateX(-50%);
+  text-align:center;
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(2.6rem,5.5vw,4rem);
+  background:linear-gradient(135deg,#FF8A65,#9CCC65);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
 }
-.game-topbar {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 18px;
-  border-bottom: 2px solid #f0e8d8;
-  flex-shrink: 0;
+.result-words-label{
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(.8rem,1.4vw,1rem);
+  font-weight:800;color:#5B4528;
+  -webkit-text-fill-color:#5B4528;
+  margin-top:6px;
 }
-.logo-sm {
-  font-family: var(--fn-display);
-  font-size: 1.3rem; color: var(--orange); flex: 1;
-}
-.logo-sm .lo{color:#ff3b7a}
-.timer-pill {
-  display: flex; align-items: center; gap: 5px;
-  background: var(--orange); color: #fff;
-  border-radius: 50px; padding: 5px 16px;
-  font-family: var(--fn-display); font-size: 1.25rem;
-}
-.game-progress{padding:6px 18px 2px;flex-shrink:0}
-.progress-info{font-size:.78rem;color:#999;font-weight:700;text-align:center;margin-bottom:3px}
-.progress-bar{height:5px;background:#ede8d8;border-radius:3px}
-.progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
-.game-body{display:flex;flex:1;min-height:0}
-.game-bee-side {
-  width: 100px; flex-shrink: 0;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 12px 6px 8px; gap: 6px;
-}
-.game-bee-em{font-size:3rem;animation:float 2.5s ease-in-out infinite}
-.bubble {
-  background: #fffde7; border: 2px solid var(--yellow);
-  border-radius: 10px; padding: 5px 8px;
-  font-size: .68rem; font-weight: 800; color: var(--brown);
-  text-align: center; position: relative;
-}
-.bubble::after {
-  content: ''; position: absolute; bottom: -9px; left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent; border-top-color: var(--yellow);
-}
-.game-center{flex:1;display:flex;flex-direction:column;gap:8px;padding:10px 12px 10px 6px;min-width:0}
-.words-display {
-  flex: 1; font-size: 1rem; line-height: 1.95; color: #aaa;
-  overflow-y: auto; word-break: break-word;
-  background: #faf7ef; border-radius: 12px; border: 2px solid #ede8d8;
-  padding: 12px 16px; min-height: 100px;
-}
-.word{display:inline;margin-right:3px}
-.word.correct{color:var(--green);font-weight:700}
-.word.wrong{color:#e84343;font-weight:700;background:#ffe5e5;border-radius:3px;padding:0 2px}
-.word.current{color:var(--brown);font-weight:800;background:#fff0a0;border-radius:4px;padding:0 3px}
-.game-input {
-  border: 2px solid #ddd; border-radius: 12px;
-  padding: 11px 16px;
-  font-family: var(--fn-body); font-size: .97rem; background: #fff;
-  transition: border-color .2s; outline: none; flex-shrink: 0;
-}
-.game-input:focus{border-color:var(--orange)}
-.game-input.wrong{border-color:#e84343;background:#fff5f5}
-.game-right-side {
-  width: 82px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  padding: 8px 6px;
-}
-.counter-box {
-  background: var(--yellow); border-radius: 14px; padding: 10px 8px;
-  text-align: center; box-shadow: 0 3px 10px rgba(253,198,2,.4);
-  min-width: 68px;
-}
-.counter-lbl{font-size:.62rem;font-weight:900;color:var(--brown);text-transform:uppercase;line-height:1.3}
-.counter-val{font-family:var(--fn-display);font-size:2.1rem;color:var(--brown);line-height:1}
 
-/* ════════════════════════════════
-   RESULT SCREEN
-════════════════════════════════ */
-#screen-result .card {
-  background: #fffef5; border-radius: 28px;
-  box-shadow: 0 8px 40px rgba(91,38,0,.15);
-  padding: 32px 44px 40px; max-width: 520px; width: 100%;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 14px; text-align: center; position: relative;
+.btn-claim{
+  position:absolute;
+  left:50%;bottom:13%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#FF9800,#FFC107);
+  color:#fff;border:none;border-radius:60px;
+  padding:clamp(12px,2vw,18px) clamp(36px,6vw,72px);
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(1rem,2vw,1.4rem);
+  cursor:pointer;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(255,152,0,.45);
+  transition:transform .2s,box-shadow .2s;
+  display:flex;align-items:center;gap:8px;
 }
-.result-bee{font-size:76px;animation:float 2.5s ease-in-out infinite}
-.result-banner {
-  background: linear-gradient(135deg, #ff6b8a, #ff3b6a);
-  color: #fff; font-family: var(--fn-display);
-  font-size: 1.75rem; padding: 9px 36px;
-  border-radius: 50px; box-shadow: 0 4px 16px rgba(255,59,106,.4);
-}
-.result-sub{font-size:.9rem;color:#999;font-weight:700}
-.result-count{display:flex;align-items:baseline;gap:8px}
-.result-num{font-family:var(--fn-display);font-size:4rem;color:var(--orange);line-height:1}
-.result-unit{font-size:1rem;color:var(--brown);font-weight:800}
-.result-reward-tag {
-  font-size:.85rem;font-weight:800;color:var(--green);
-  background:#edffd8;border:2px solid #8dce5a;
-  padding:7px 18px;border-radius:20px;
-}
-.btn-claim {
-  background: linear-gradient(135deg,var(--yellow),#ffc107);
-  color: var(--brown); border: none; border-radius: 50px;
-  padding: 13px 44px;
-  font-family: var(--fn-body); font-size: 1.05rem; font-weight: 900;
-  cursor: pointer; box-shadow: 0 4px 16px rgba(253,198,2,.45);
-  transition: transform .15s;
-}
-.btn-claim:hover{transform:translateY(-2px)}
-.no-reward-box {
-  padding: 14px 20px; background: #fff5e5; border-radius: 14px;
-  border: 2px solid #ffcc80; text-align: center;
-}
-.no-reward-box p{font-size:.92rem;color:#aa6600;font-weight:800}
-.no-reward-box small{font-size:.78rem;color:#aaa}
-.result-gift{position:absolute;right:-12px;bottom:28px;font-size:2.8rem;animation:float 3.5s ease-in-out 1s infinite}
-.btn-try-again {
-  background: #fff; color: var(--brown);
-  border: 2px solid var(--brown); border-radius: 50px;
-  padding: 11px 36px;
-  font-family: var(--fn-body); font-size: .95rem; font-weight: 800;
-  cursor: pointer; transition: transform .15s;
-}
-.btn-try-again:hover{transform:translateY(-2px)}
+.btn-claim:hover{transform:translateX(-50%) translateY(-4px)}
 
-/* ════════════════════════════════
-   CLAIM SCREEN
-════════════════════════════════ */
-#screen-claim .claim-wrap {
-  background: #fffef5; border-radius: 24px;
-  box-shadow: 0 8px 40px rgba(91,38,0,.15);
-  max-width: 800px; width: 100%;
-  display: flex; overflow: hidden;
-  max-height: calc(100vh - 32px);
-}
-.claim-left {
-  flex: 1.1; background: linear-gradient(165deg,#fffde8,#fff8d0);
-  padding: 28px 24px; display: flex; flex-direction: column;
-  gap: 12px; position: relative; overflow: hidden;
-}
-.claim-logo-title{font-family:var(--fn-display);font-size:1.4rem;color:var(--orange)}
-.claim-logo-title .lo{color:#ff3b7a}
-.claim-logo-sub{font-size:.65rem;font-weight:900;color:var(--brown);text-transform:uppercase;letter-spacing:2px}
-.claim-logo-slogan{font-size:.7rem;color:#aaa}
-.claim-banner {
-  background: linear-gradient(135deg,#ff6b8a,#ff3b6a);
-  color: #fff; border-radius: 10px;
-  padding: 9px 14px; text-align: center;
-  font-size: .76rem; font-weight: 900;
-  letter-spacing: 1px; text-transform: uppercase;
-}
-.claim-prize-box {
-  background: #fff; border-radius: 16px;
-  padding: 16px 14px; border: 2px solid #ffe9a0;
-  flex: 1; display: flex; flex-direction: column;
-  gap: 10px; align-items: center; justify-content: center;
-  text-align: center; overflow: auto;
-}
-.cp-title{font-family:var(--fn-display);font-size:1.5rem;color:var(--brown)}
-.voucher-big{font-family:var(--fn-display);font-size:3rem;color:var(--orange);line-height:1}
-.voucher-detail{font-size:.78rem;color:#888}
-.sticker-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
-.sticker-item{background:#fffde8;border:2px solid #ffd;border-radius:10px;padding:9px 6px;font-size:.68rem;font-weight:800;color:var(--brown);text-align:center}
-.sticker-item .si{font-size:1.5rem;display:block;margin-bottom:3px}
-.kit-emoji{font-size:3.2rem;text-align:center}
-.kit-name{font-weight:900;color:var(--brown);font-size:.9rem}
-.claim-right {
-  flex: 1; padding: 28px 24px;
-  display: flex; flex-direction: column;
-  gap: 12px; overflow-y: auto;
-}
-.claim-right-header{display:flex;align-items:center;gap:8px}
-.claim-right-title{font-family:var(--fn-display);font-size:1.3rem;color:var(--brown)}
-.claim-right-title .lo{color:#ff3b7a}
-.claim-right-sub{font-size:.78rem;color:#999;line-height:1.45}
-.form-group{display:flex;flex-direction:column;gap:4px}
-.form-group label{font-size:.74rem;font-weight:800;color:var(--brown);display:flex;align-items:center;gap:4px}
-.form-group input,.form-group textarea {
-  border: 2px solid #e8e0d0; border-radius: 10px;
-  padding: 9px 13px;
-  font-family: var(--fn-body); font-size: .88rem;
-  background: #faf8f3; outline: none;
-  transition: border-color .2s; width: 100%;
-}
-.form-group input:focus,.form-group textarea:focus{border-color:var(--orange)}
-.form-group textarea{resize:none;height:64px}
-.btn-submit {
-  background: linear-gradient(135deg,var(--brown),#7a3500);
-  color: var(--yellow); border: none; border-radius: 50px;
-  padding: 13px 24px; width: 100%;
-  font-family: var(--fn-body); font-size: .97rem; font-weight: 900;
-  cursor: pointer; letter-spacing: 1px;
-  box-shadow: 0 4px 16px rgba(91,38,0,.35);
-  transition: transform .15s;
-}
-.btn-submit:hover{transform:translateY(-2px)}
+/* ========================================
+   SCREEN 4 — GIFT (1, 2, 3)
+   bg: Gift_1.png / Gift_2.png / Gift_3.png
+   Right half has white dashed form panel
+   Overlay the form fields + button into the right panel
+   Right panel starts ~47% from left, top ~5%, width ~51%, height ~90%
+   ======================================== */
+#s-gift{ background-image:url('../cdn.shopify.com/s/game_img/Gift\ 1.png'); }/* updated by JS */
 
-/* ════════════════════════════════
-   THANK YOU SCREEN
-════════════════════════════════ */
-#screen-thankyou .card {
-  background: #fffef5; border-radius: 28px;
-  box-shadow: 0 8px 40px rgba(91,38,0,.15);
-  padding: 36px 48px 44px; max-width: 600px; width: 100%;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 14px; text-align: center; position: relative;
+.gift-form-panel{
+  position:absolute;
+  left:47%; top:5%; width:51%; height:90%;
+  display:flex;flex-direction:column;
+  justify-content:flex-end;
+  padding:0 4% 4% 3%;
+  gap:0;
 }
-.ty-bee{font-size:68px;animation:float 2.5s ease-in-out infinite}
-.ty-title{font-family:var(--fn-display);font-size:2.2rem;color:var(--brown);display:flex;align-items:center;gap:8px}
-.ty-desc{font-size:.93rem;color:#666;line-height:1.7;max-width:400px}
-.ty-desc strong{color:var(--brown)}
-.ty-keep {
-  background: var(--green); color: #fff;
-  border-radius: 50px; padding: 8px 22px;
-  font-size: .88rem; font-weight: 800;
-  display: inline-flex; align-items: center; gap: 5px;
+
+/* subtitle already in bg; just render inputs */
+.form-fields{
+  display:flex;flex-direction:column;gap:clamp(6px,1.2vh,12px);
+  flex:1;justify-content:center;
+  padding-top:clamp(60px,14%,130px);/* push below bg text */
 }
-.ty-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
-.btn-again {
-  flex:1;min-width:150px;
-  background: linear-gradient(135deg,var(--orange),#ffd020);
-  color: var(--brown); border: none; border-radius: 50px;
-  padding: 12px 18px;
-  font-family: var(--fn-body); font-size: .92rem; font-weight: 900;
-  cursor: pointer; box-shadow: 0 4px 14px rgba(255,140,66,.4);
-  transition: transform .15s;
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-label{
+  font-family:'Nunito',sans-serif;font-size:clamp(.78rem,1.3vw,.95rem);
+  font-weight:800;color:#5B4528;
+  display:flex;align-items:center;gap:6px;
 }
-.btn-homepage {
-  flex:1;min-width:150px;
-  background: #fff; color: var(--brown);
-  border: 2px solid var(--brown); border-radius: 50px;
-  padding: 12px 18px;
-  font-family: var(--fn-body); font-size: .92rem; font-weight: 900;
-  cursor: pointer; text-decoration: none;
-  display: flex; align-items: center; justify-content: center; gap: 5px;
-  transition: transform .15s;
+.form-input{
+  background:#f9f7f3;border:2px solid #e8e0d0;border-radius:14px;
+  padding:clamp(9px,1.4vh,14px) clamp(10px,1.5vw,16px);
+  font-family:'Nunito',sans-serif;font-size:clamp(.82rem,1.3vw,.95rem);
+  color:#5B4528;outline:none;
+  transition:border-color .2s,box-shadow .2s;
 }
-.btn-again:hover,.btn-homepage:hover{transform:translateY(-2px)}
-.ty-gift{position:absolute;right:-10px;bottom:28px;text-align:center;font-size:2.6rem;animation:float 3.5s ease-in-out 1s infinite}
-.ty-gift small{display:block;font-size:.52rem;font-weight:900;color:var(--brown);line-height:1}
+.form-input:focus{border-color:#FFD54A;box-shadow:0 3px 10px rgba(255,213,74,.25)}
+.form-input::placeholder{color:#bbb}
+textarea.form-input{resize:none;height:clamp(52px,8vh,76px);}
+
+.btn-hoan-tat{
+  margin-top:clamp(8px,1.5vh,16px);
+  background:linear-gradient(135deg,#FF9800,#FFC107);
+  color:#fff;border:none;border-radius:60px;
+  padding:clamp(12px,2vh,18px) 0;width:100%;
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(1rem,2vw,1.35rem);letter-spacing:.5px;
+  cursor:pointer;
+  box-shadow:0 8px 24px rgba(255,152,0,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+.btn-hoan-tat:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(255,152,0,.5)}
+
+/* ========================================
+   SCREEN 5 — FINISH
+   bg: Finish.png
+   Two buttons: "PLAY AGAIN" (orange) + "RETURN HOMEPAGE" (blue)
+   They appear near bottom ~82% from top, side by side
+   ======================================== */
+#s-finish{ background-image:url('../cdn.shopify.com/s/game_img/Finish.png'); }
+
+.finish-buttons{
+  position:absolute;
+  left:50%;bottom:10%;transform:translateX(-50%);
+  display:flex;gap:clamp(10px,2vw,24px);
+  align-items:center;
+}
+.btn-play-again,.btn-home-btn{
+  border:none;border-radius:60px;
+  padding:clamp(12px,2vw,18px) clamp(24px,4vw,52px);
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(.95rem,1.8vw,1.3rem);
+  letter-spacing:.5px;cursor:pointer;white-space:nowrap;
+  transition:transform .2s,box-shadow .2s;
+  display:flex;align-items:center;gap:8px;
+}
+.btn-play-again{
+  background:linear-gradient(135deg,#FF9800,#FFC107);color:#fff;
+  box-shadow:0 8px 24px rgba(255,152,0,.45);
+}
+.btn-play-again:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(255,152,0,.55)}
+.btn-home-btn{
+  background:linear-gradient(135deg,#64B5F6,#2196F3);color:#fff;
+  box-shadow:0 8px 24px rgba(33,150,243,.4);
+}
+.btn-home-btn:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(33,150,243,.5)}
 </style>
 </head>
 <body>
 
-<!-- Nature BG -->
-<div class="bg"></div>
-<div class="bg-sun"></div>
-<div class="bg-rainbow"></div>
-<div class="bg-cloud cloud1"></div>
-<div class="bg-cloud cloud2"></div>
-<div class="bg-cloud cloud3"></div>
-<div class="bg-flowers">
-  <span class="flower">🌸</span>
-  <span class="flower">🌼</span>
-  <span class="flower">🌻</span>
-  <span class="flower">🌺</span>
-  <span class="flower">🌸</span>
+<!-- ════════════════════════════════════════
+     SCREEN 1 — MAIN
+════════════════════════════════════════ -->
+<div id="s-main" class="screen active">
+  <button class="btn-start" onclick="startGame()">START GAME &nbsp;›</button>
 </div>
 
-<!-- ══ INTRO ══ -->
-<div id="screen-intro" class="screen active">
-  <div class="card">
-    <div class="intro-bee">🐝</div>
-    <div class="intro-title">
-      <span class="intro-beelo">BEELƠ</span>
-      <span class="intro-challenge">TYPING CHALLENGE</span>
+
+<!-- ════════════════════════════════════════
+     SCREEN 2 — GAME
+════════════════════════════════════════ -->
+<div id="s-game" class="screen">
+
+  <!-- Timer -->
+  <div class="timer-pill">⏰&nbsp;<span id="timer-display">01:00</span></div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-label">⭐&nbsp;<span id="progress-text">0 / 0 words completed</span></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
     </div>
-    <p class="intro-desc">
-      Bạn đã sẵn sàng trở thành <strong>Nhà Đánh Máy Nhí</strong> chưa?<br>
-      Hãy gõ thật nhanh và chính xác trong <strong>60 giây</strong><br>
-      để nhận những phần quà hấp dẫn từ Beelơ! 🐝
-    </p>
-    <div class="intro-rewards">
-      <span class="rew-1">🐝 30–59 từ → Voucher 10%</span>
-      <span class="rew-2">🌈 60–89 từ → Sticker Set</span>
-      <span class="rew-3">👑 90+ từ → Starter Kit</span>
+  </div>
+
+  <!-- Reading passage card -->
+  <div class="reading-card" id="reading-area"></div>
+
+  <!-- Typing input -->
+  <input
+    type="text" id="game-input" class="typing-input"
+    placeholder="Start typing here…"
+    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+  >
+
+  <!-- Words Typed counter (bottom-right) -->
+  <div class="words-typed-box">
+    <div class="words-typed-label">Words<br>Typed</div>
+    <div class="words-typed-num" id="counter-value">0</div>
+  </div>
+
+  <!-- Settings / close (just back-to-main) -->
+  <button onclick="backToMain()" style="
+    position:absolute;top:3%;right:2%;
+    background:rgba(255,255,255,.85);border:none;border-radius:50%;
+    width:clamp(36px,4vw,54px);height:clamp(36px,4vw,54px);
+    font-size:1.3rem;cursor:pointer;
+    box-shadow:0 3px 10px rgba(0,0,0,.12);
+    display:flex;align-items:center;justify-content:center;
+  " title="Exit">✕</button>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN 3 — RESULT
+════════════════════════════════════════ -->
+<div id="s-result" class="screen">
+  <!-- Score overlay inside the pale box in the card -->
+  <div class="result-score-overlay">
+    <div id="result-number" style="font-size:inherit">0</div>
+    <div class="result-words-label">từ chính xác</div>
+  </div>
+
+  <!-- CTA button -->
+  <button class="btn-claim" id="btn-claim" onclick="showGiftScreen()">
+    Hãy nhận quà ngay &nbsp;›
+  </button>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     SCREEN 4 — GIFT
+════════════════════════════════════════ -->
+<div id="s-gift" class="screen">
+  <div class="gift-form-panel">
+    <div class="form-fields">
+      <div class="form-group">
+        <label class="form-label">👤 Họ và tên</label>
+        <input type="text" id="form-name" class="form-input" placeholder="Nhập họ và tên của bạn" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">✉️ Email</label>
+        <input type="email" id="form-email" class="form-input" placeholder="Nhập email của bạn" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📱 Số điện thoại</label>
+        <input type="tel" id="form-phone" class="form-input" placeholder="Nhập số điện thoại của bạn">
+      </div>
+      <div class="form-group">
+        <label class="form-label">💬 Câu hỏi hoặc ghi chú khác</label>
+        <textarea id="form-note" class="form-input" placeholder="Nhập câu hỏi hoặc ghi chú của bạn"></textarea>
+      </div>
     </div>
-    <button class="btn-start" onclick="startCountdown()">🚀 START GAME &nbsp;›</button>
-    <div class="intro-gift">🎁</div>
+    <button class="btn-hoan-tat" onclick="submitGift()">HOÀN TẤT &nbsp;›</button>
   </div>
 </div>
 
-<!-- ══ COUNTDOWN ══ -->
-<div id="screen-countdown" class="screen">
-  <div class="countdown-num" id="cd-num">3</div>
-  <div class="countdown-label">Sẵn sàng gõ nào! ✨</div>
-</div>
 
-<!-- ══ GAME ══ -->
-<div id="screen-game" class="screen">
-  <div class="game-wrap">
-    <div class="game-topbar">
-      <div class="logo-sm">Beel<span class="lo">ơ</span></div>
-      <div class="timer-pill">⏰ <span id="timer-disp">01:00</span></div>
-      <div style="flex:1"></div>
-    </div>
-    <div class="game-progress">
-      <div class="progress-info" id="prog-text">0 / 0 words completed</div>
-      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-    </div>
-    <div class="game-body">
-      <div class="game-bee-side">
-        <div class="game-bee-em">🐝</div>
-        <div class="bubble">You can<br>do it!</div>
-      </div>
-      <div class="game-center">
-        <div class="words-display" id="words-disp"></div>
-        <input class="game-input" id="game-inp"
-          placeholder="Bắt đầu gõ tại đây..."
-          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      </div>
-      <div class="game-right-side">
-        <div class="counter-box">
-          <div class="counter-lbl">Words<br>typed</div>
-          <div class="counter-val" id="cnt-val">0</div>
-        </div>
-      </div>
-    </div>
+<!-- ════════════════════════════════════════
+     SCREEN 5 — FINISH
+════════════════════════════════════════ -->
+<div id="s-finish" class="screen">
+  <div class="finish-buttons">
+    <button class="btn-play-again" onclick="backToMain()">↻&nbsp; PLAY AGAIN</button>
+    <button class="btn-home-btn" onclick="goHome()">🏠&nbsp; VỀ TRANG CHỦ</button>
   </div>
 </div>
 
-<!-- ══ RESULT ══ -->
-<div id="screen-result" class="screen">
-  <div class="card">
-    <div class="result-bee" id="res-bee">🐝</div>
-    <div class="result-banner" id="res-banner">Great Job!</div>
-    <div class="result-sub">Bạn đã gõ được:</div>
-    <div class="result-count">
-      <span class="result-num" id="res-num">0</span>
-      <span class="result-unit">từ chính xác</span>
-    </div>
-    <div class="result-reward-tag" id="res-tag" style="display:none"></div>
-    <button class="btn-claim" id="btn-claim" onclick="showClaim()" style="display:none">Hãy nhận quà nào &nbsp;›</button>
-    <div class="no-reward-box" id="res-no-reward" style="display:none">
-      <p>Hãy thử lại nhé! 💪</p>
-      <small>Gõ ít nhất 30 từ để nhận phần thưởng.</small>
-    </div>
-    <button class="btn-try-again" onclick="resetGame()">🔄 Chơi lại</button>
-    <div class="result-gift">🎁</div>
-  </div>
-</div>
-
-<!-- ══ CLAIM ══ -->
-<div id="screen-claim" class="screen">
-  <div class="claim-wrap">
-    <div class="claim-left">
-      <div>
-        <div class="claim-logo-title">Beel<span class="lo">ơ</span> <span style="font-size:.75rem;font-family:var(--fn-body);font-weight:900;color:#888">MINI BUZZ SET</span></div>
-        <div class="claim-logo-sub">Creative Tools for Kids</div>
-        <div class="claim-logo-slogan">Sáng tạo mỗi ngày, học hỏi thật vui lên ✨</div>
-      </div>
-      <div class="claim-banner">🎁 NHẬN QUÀ TỪ BEELƠ 🎁</div>
-      <div class="claim-prize-box" id="claim-prize"></div>
-    </div>
-    <div class="claim-right">
-      <div class="claim-right-header">
-        <span style="font-size:1.7rem">🎁</span>
-        <div class="claim-right-title">Nhận quà<br>từ Beel<span class="lo">ơ</span></div>
-      </div>
-      <div class="claim-right-sub">Vui lòng để lại thông tin để đội ngũ <strong>Beelơ</strong> liên hệ bạn sớm nhất.</div>
-      <form onsubmit="submitClaim(event)" style="display:flex;flex-direction:column;gap:9px">
-        <div class="form-group">
-          <label>👤 Họ và tên</label>
-          <input type="text" id="f-name" placeholder="Nhập họ và tên của bạn" required>
-        </div>
-        <div class="form-group">
-          <label>✉️ Email</label>
-          <input type="email" id="f-email" placeholder="Nhập email của bạn" required>
-        </div>
-        <div class="form-group">
-          <label>📞 Số điện thoại</label>
-          <input type="tel" id="f-phone" placeholder="Nhập số điện thoại của bạn">
-        </div>
-        <div class="form-group">
-          <label>💬 Câu hỏi hoặc ghi chú khác</label>
-          <textarea id="f-note" placeholder="Nhập câu hỏi hoặc ghi chú của bạn"></textarea>
-        </div>
-        <button type="submit" class="btn-submit">HOÀN TẤT &nbsp;›</button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- ══ THANK YOU ══ -->
-<div id="screen-thankyou" class="screen">
-  <div class="card">
-    <div class="ty-bee">🐝</div>
-    <div class="ty-title">💛 CẢM ƠN BẠN!</div>
-    <p class="ty-desc">
-      Cảm ơn bạn đã tham gia <strong>Beelơ Typing Challenge</strong>.<br>
-      Hy vọng bạn đã có những phút giây vừa học vừa chơi thật vui vẻ.<br>
-      Hẹn gặp lại bạn trong những hoạt động sáng tạo tiếp theo cùng Beelơ!
-    </p>
-    <div class="ty-keep">🐝 Keep Creating With Beelơ!</div>
-    <div class="ty-buttons">
-      <button class="btn-again" onclick="resetGame()">🔄 PLAY AGAIN</button>
-      <a class="btn-homepage" href="index.html">🏠 RETURN HOMEPAGE</a>
-    </div>
-    <div class="ty-gift">🎁<small>THANK YOU!</small></div>
-  </div>
-</div>
 
 <script>
-const PARAGRAPHS = [
-  "Every morning Beelo the little bee wakes up early to begin a brand new day full of adventure and learning Beelo loves flying around the garden visiting colorful flowers and meeting friendly animals along the way As Beelo explores nature he discovers new things about plants trees and the world around him He believes that every day is a wonderful opportunity to learn create and grow Whether it is trying something new helping a friend or practicing an important skill Beelo always gives his best effort He knows that with patience determination and a positive attitude anyone can achieve great things and turn small dreams into amazing accomplishments",
-  "One sunny day Beelo and his rainbow friends set out on a magical journey to collect colors from around the world They traveled across green fields sparkling rivers and beautiful forests filled with singing birds Along the way they faced exciting challenges that taught them about friendship teamwork and courage Whenever they encountered a problem they worked together to find a solution and encouraged one another to keep going As they continued their adventure they gathered bright colors from every place they visited By the end of the journey they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere",
-  "Today is the biggest creative festival of the year and Beelo is excited to welcome children from all over the world The festival is filled with fun activities such as drawing coloring storytelling and creating wonderful art projects Every child brings unique ideas and imagination to share with others Some children draw beautiful forests while others create colorful oceans magical castles or even planets in outer space Beelo encourages everyone to express themselves freely because every idea is valuable and special Throughout the day children learn that creativity grows when they are confident curious and willing to try new things By the end of the festival everyone leaves with happy memories new friends and inspiration to continue exploring their creativity every day"
+/* ─── Data ─── */
+const PARAGRAPHS=[
+  "Every morning, Beelo the little bee wakes up early to begin a brand-new day full of adventure and learning. Beelo loves flying around the garden, visiting colorful flowers, and meeting friendly animals along the way. As Beelo explores nature, he discovers new things about plants, trees, and the world around him. He believes that every day is a wonderful opportunity to learn, create, and grow. Whether it is trying something new, helping a friend, or practicing an important skill, Beelo always gives his best effort. He knows that with patience, determination, and a positive attitude, anyone can achieve great things and turn small dreams into amazing accomplishments.",
+  "One sunny day, Beelo and his rainbow friends set out on a magical journey to collect colors from around the world. They traveled across green fields, sparkling rivers, and beautiful forests filled with singing birds. Along the way, they faced exciting challenges that taught them about friendship, teamwork, and courage. Whenever they encountered a problem, they worked together to find a solution and encouraged one another to keep going. As they continued their adventure, they gathered bright colors from every place they visited. By the end of the journey, they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere.",
+  "Today is the biggest creative festival of the year, and Beelo is excited to welcome children from all over the world. The festival is filled with fun activities such as drawing, coloring, storytelling, and creating wonderful art projects. Every child brings unique ideas and imagination to share with others. Some children draw beautiful forests, while others create colorful oceans, magical castles, or even planets in outer space. Beelo encourages everyone to express themselves freely because every idea is valuable and special. Throughout the day, children learn that creativity grows when they are confident, curious, and willing to try new things. By the end of the festival, everyone leaves with happy memories, new friends, and inspiration to continue exploring their creativity every day."
 ];
 
-const REWARDS = {
-  none:   { tier: 0, label: null },
-  level1: { tier: 1, label: '🐝 Voucher giảm 10% (tối đa 100.000 VNĐ)' },
-  level2: { tier: 2, label: '🌈 Bộ Sticker Set Beelơ' },
-  level3: { tier: 3, label: '👑 Beelơ Mini Buzz Starter Kit' },
+/* ─── State ─── */
+let state={
+  words:[],idx:0,correct:0,
+  timeLeft:60,active:false,timer:null
 };
 
-let state = {
-  words: [], idx: 0, correct: 0,
-  timeLeft: 60, timer: null, active: false,
-  reward: null, finalCount: 0,
-};
-
-function getReward(n) {
-  if (n >= 90) return REWARDS.level3;
-  if (n >= 60) return REWARDS.level2;
-  if (n >= 30) return REWARDS.level1;
-  return REWARDS.none;
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+/* ─── Screens ─── */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-/* ── Countdown ── */
-function startCountdown() {
-  showScreen('screen-countdown');
-  let n = 3;
-  const el = document.getElementById('cd-num');
-  el.textContent = n;
-  const iv = setInterval(() => {
-    n--;
-    if (n <= 0) { clearInterval(iv); initGame(); return; }
-    el.style.animation = 'none';
-    void el.offsetWidth;
-    el.style.animation = 'pop .4s ease';
-    el.textContent = n;
-  }, 1000);
+function backToMain(){
+  state.active=false;clearInterval(state.timer);
+  document.getElementById('game-input').value='';
+  document.getElementById('game-input').classList.remove('error');
+  show('s-main');
 }
 
-/* ── Init game ── */
-function initGame() {
-  const para = PARAGRAPHS[Math.floor(Math.random() * PARAGRAPHS.length)];
-  state.words = para.split(' ');
-  state.idx = 0; state.correct = 0;
-  state.timeLeft = 60; state.active = true;
-  renderWords();
-  setCounter(0);
-  setTimer(60);
-  setProgress(0, state.words.length);
-  const inp = document.getElementById('game-inp');
-  inp.value = ''; inp.classList.remove('wrong');
-  showScreen('screen-game');
-  inp.focus();
-  state.timer = setInterval(tick, 1000);
+function goHome(){ window.location.href='index.html'; }
+
+/* ─── Start game ─── */
+function startGame(){
+  const para=PARAGRAPHS[Math.floor(Math.random()*PARAGRAPHS.length)];
+  state.words=para.split(/\s+/);
+  state.idx=0; state.correct=0;
+  state.timeLeft=60; state.active=true;
+
+  renderPassage(); updateCounter(0); updateProgress(); updateTimerUI();
+  show('s-game');
+  document.getElementById('game-input').focus();
+
+  state.timer=setInterval(()=>{
+    state.timeLeft--;
+    updateTimerUI();
+    if(state.timeLeft<=0) endGame();
+  },1000);
 }
 
-/* ── Timer ── */
-function tick() {
-  state.timeLeft--;
-  setTimer(state.timeLeft);
-  if (state.timeLeft <= 0) endGame();
-}
-function setTimer(s) {
-  const m = String(Math.floor(s / 60)).padStart(2, '0');
-  const ss = String(s % 60).padStart(2, '0');
-  document.getElementById('timer-disp').textContent = m + ':' + ss;
+/* ─── Timer ─── */
+function updateTimerUI(){
+  const m=String(Math.floor(state.timeLeft/60)).padStart(2,'0');
+  const s=String(state.timeLeft%60).padStart(2,'0');
+  document.getElementById('timer-display').textContent=`${m}:${s}`;
 }
 
-/* ── Render words ── */
-function renderWords() {
-  const el = document.getElementById('words-disp');
-  el.innerHTML = state.words.map((w, i) => {
-    let c = 'word';
-    if (i < state.idx) c += ' correct';
-    else if (i === state.idx) c += ' current';
-    return `<span class="${c}">${w}</span>`;
+/* ─── Progress ─── */
+function updateProgress(){
+  const pct=state.words.length?Math.round(state.idx/state.words.length*100):0;
+  document.getElementById('progress-text').textContent=`${state.idx} / ${state.words.length} words completed`;
+  document.getElementById('progress-fill').style.width=pct+'%';
+}
+
+/* ─── Render passage ─── */
+function renderPassage(){
+  const area=document.getElementById('reading-area');
+  area.innerHTML=state.words.map((w,i)=>{
+    let cls='word';
+    if(i<state.idx) cls+=' correct';
+    else if(i===state.idx) cls+=' current';
+    return `<span class="${cls}">${w}</span>`;
   }).join(' ');
-  const cur = el.querySelector('.current');
-  if (cur) cur.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  const cur=area.querySelector('.current');
+  if(cur) cur.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 
-/* ── Input ── */
-document.addEventListener('DOMContentLoaded', () => {
-  const inp = document.getElementById('game-inp');
-  inp.addEventListener('keydown', e => {
-    if (!state.active) return;
-    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); commitWord(); }
-  });
-  inp.addEventListener('input', () => {
-    if (!state.active) return;
-    const t = inp.value.trim();
-    const target = state.words[state.idx] || '';
-    inp.classList.toggle('wrong', t.length > 0 && !target.startsWith(t));
-  });
-});
+/* ─── Counter ─── */
+function updateCounter(n){
+  document.getElementById('counter-value').textContent=n;
+}
 
-function commitWord() {
-  const inp = document.getElementById('game-inp');
-  const typed = inp.value.trim();
-  if (!typed) return;
-  if (typed === state.words[state.idx]) {
+/* ─── Submit word ─── */
+function submitWord(typed){
+  if(!typed||state.idx>=state.words.length) return;
+  const target=state.words[state.idx];
+  if(typed.toLowerCase()===target.toLowerCase()){
     state.correct++;
-    setCounter(state.correct);
+    updateCounter(state.correct);
   }
   state.idx++;
-  setProgress(state.idx, state.words.length);
-  if (state.idx >= state.words.length) { endGame(); return; }
-  inp.value = ''; inp.classList.remove('wrong');
-  renderWords();
+  updateProgress(); renderPassage();
+  const inp=document.getElementById('game-input');
+  inp.value=''; inp.classList.remove('error'); inp.focus();
+  if(state.idx>=state.words.length) endGame();
 }
 
-function setCounter(n) { document.getElementById('cnt-val').textContent = n; }
-function setProgress(done, total) {
-  const pct = total > 0 ? Math.round(done / total * 100) : 0;
-  document.getElementById('prog-text').textContent = done + ' / ' + total + ' words completed';
-  document.getElementById('prog-fill').style.width = pct + '%';
+/* ─── End game ─── */
+function endGame(){
+  state.active=false; clearInterval(state.timer);
+  document.getElementById('result-number').textContent=state.correct;
+  show('s-result');
 }
 
-/* ── End game ── */
-function endGame() {
-  if (!state.active) return;
-  state.active = false;
-  clearInterval(state.timer);
-  state.finalCount = state.correct;
-  state.reward = getReward(state.correct);
-  showResult();
+/* ─── Gift screen ─── */
+function showGiftScreen(){
+  const n=state.correct;
+  let bg='../cdn.shopify.com/s/game_img/Gift\ 1.png';
+  if(n>=90) bg='../cdn.shopify.com/s/game_img/Gift\ 3.png';
+  else if(n>=60) bg='../cdn.shopify.com/s/game_img/Gift\ 2.png';
+  document.getElementById('s-gift').style.backgroundImage=`url('${bg}')`;
+  // clear form
+  ['form-name','form-email','form-phone','form-note'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  show('s-gift');
 }
 
-/* ── Result ── */
-function showResult() {
-  const n = state.finalCount;
-  const r = state.reward;
-  document.getElementById('res-num').textContent = n;
-
-  const banners = { 0: 'Good Try! 💪', 1: '😊 Great Job!', 2: '⭐ Amazing!', 3: '🏆 Outstanding!' };
-  const bees    = { 0: '🐝', 1: '🐝', 2: '⭐', 3: '🏆' };
-  document.getElementById('res-banner').textContent = banners[r.tier];
-  document.getElementById('res-bee').textContent = bees[r.tier];
-
-  if (r.tier === 0) {
-    document.getElementById('btn-claim').style.display = 'none';
-    document.getElementById('res-tag').style.display = 'none';
-    document.getElementById('res-no-reward').style.display = 'block';
-  } else {
-    document.getElementById('btn-claim').style.display = 'inline-block';
-    document.getElementById('res-no-reward').style.display = 'none';
-    const tag = document.getElementById('res-tag');
-    tag.style.display = 'inline-block';
-    tag.textContent = r.label;
+/* ─── Submit gift form ─── */
+function submitGift(){
+  const name=document.getElementById('form-name').value.trim();
+  const email=document.getElementById('form-email').value.trim();
+  if(!name||!email){
+    alert('Vui lòng điền đầy đủ họ tên và email!');
+    return;
   }
-  showScreen('screen-result');
+  show('s-finish');
 }
 
-/* ── Claim ── */
-function showClaim() {
-  const t = state.reward.tier;
-  const box = document.getElementById('claim-prize');
-  if (t === 1) {
-    box.innerHTML = `
-      <div class="cp-title">VOUCHER</div>
-      <div class="voucher-big">10%</div>
-      <div class="voucher-detail">Giảm giá tối đa <b>100.000 VNĐ</b></div>
-      <div class="voucher-detail" style="color:#bbb">⏰ Hạn dùng 30 ngày kể từ ngày nhận</div>`;
-  } else if (t === 2) {
-    box.innerHTML = `
-      <div class="cp-title">BỘ STICKER BEELƠ</div>
-      <div class="sticker-grid">
-        <div class="sticker-item"><span class="si">🐝</span>Sticker ong Beelo</div>
-        <div class="sticker-item"><span class="si">🌈</span>Sticker cầu vồng</div>
-        <div class="sticker-item"><span class="si">✏️</span>Sticker sáng tạo</div>
-        <div class="sticker-item"><span class="si">📚</span>Sticker học tập</div>
-      </div>`;
-  } else {
-    box.innerHTML = `
-      <div class="kit-emoji">🎨🐝🖍️</div>
-      <div class="cp-title">MINI BUZZ</div>
-      <div class="kit-name">Beelơ Beeswax Crayons<br>Starter Kit</div>
-      <div class="voucher-detail">Bộ sản phẩm đặc biệt dành cho bé yêu! 🌟</div>`;
-  }
-  showScreen('screen-claim');
-}
+/* ─── Input events ─── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('game-input');
 
-/* ── Submit ── */
-function submitClaim(e) {
-  e.preventDefault();
-  showScreen('screen-thankyou');
-}
+  inp.addEventListener('keydown',e=>{
+    if(!state.active) return;
+    if(e.key===' '||e.key==='Enter'){
+      e.preventDefault();
+      submitWord(inp.value.trim());
+    }
+  });
 
-/* ── Reset ── */
-function resetGame() {
-  ['f-name','f-email','f-phone','f-note'].forEach(id => { document.getElementById(id).value = ''; });
-  showScreen('screen-intro');
-}
+  inp.addEventListener('input',()=>{
+    if(!state.active) return;
+    const typed=inp.value.trim();
+    const target=state.words[state.idx]||'';
+    if(typed&&!target.toLowerCase().startsWith(typed.toLowerCase()))
+      inp.classList.add('error');
+    else inp.classList.remove('error');
+  });
+});
 </script>
 </body>
 </html>
