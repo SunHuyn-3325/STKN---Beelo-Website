@@ -1,1163 +1,812 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beelo Typing Challenge ⌨🐝</title>
-  <link rel="shortcut icon" href="cdn/shop/files/bee-icon_32x32a461.png" type="image/png">
-  <!-- Font: Quicksand từ file local (đúng path, không phụ thuộc internet) -->
-  <style>
-    @font-face {
-      font-family: 'Quicksand';
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-      src: url('cdn/fonts/quicksand/quicksand_n4.bf8322a9d1da765aa396ad7b6eeb81930a6214de.woff2') format('woff2');
-    }
-    @font-face {
-      font-family: 'Quicksand';
-      font-weight: 500;
-      font-style: normal;
-      font-display: swap;
-      src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
-    }
-    @font-face {
-      font-family: 'Quicksand';
-      font-weight: 600;
-      font-style: normal;
-      font-display: swap;
-      src: url('cdn/fonts/quicksand/quicksand_n4.bf8322a9d1da765aa396ad7b6eeb81930a6214de.woff2') format('woff2');
-    }
-    @font-face {
-      font-family: 'Quicksand';
-      font-weight: 700;
-      font-style: normal;
-      font-display: swap;
-      src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
-    }
-    @font-face {
-      font-family: 'Quicksand';
-      font-weight: 800;
-      font-style: normal;
-      font-display: swap;
-      src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beelo Typing Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── Local fonts (only the 2 files that actually exist) ── */
+@font-face {
+  font-family: 'Quicksand';
+  font-weight: 400;
+  font-display: swap;
+  src: url('cdn/fonts/quicksand/quicksand_n4.bf8322a9d1da765aa396ad7b6eeb81930a6214de.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Quicksand';
+  font-weight: 500;
+  font-display: swap;
+  src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
+}
 
-  <style>
-    /* ============================================================
-       RESET & ROOT
-    ============================================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sky: #a8d8ea;
+  --hill1: #8dce5a;
+  --hill2: #5ea33c;
+  --cream: #fffdf0;
+  --yellow: #fdc602;
+  --orange: #ff8c42;
+  --brown: #5b2600;
+  --pink: #ff6b8a;
+  --green: #5ea33c;
+  --fn-display: 'Fredoka One', 'Nunito', 'Quicksand', sans-serif;
+  --fn-body: 'Nunito', 'Quicksand', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  min-height: 100vh;
+  font-family: var(--fn-body);
+  background: var(--sky);
+  overflow: hidden;
+}
 
-    :root {
-      --yellow:   #fdc602;
-      --yellow-dk:#b38b00;
-      --brown:    #5b2600;
-      --brown-lt: #8b4a1a;
-      --cream:    #f5eddd;
-      --cream-dk: #ecdfc6;
-      --green:    #4caf7d;
-      --green-lt: #d4f0e2;
-      --red:      #e05555;
-      --red-lt:   #fde8e8;
-      --blue:     #2693cf;
-      --blue-lt:  #d0eaf8;
-      --purple:   #9b59b6;
-      --pink:     #f48fb1;
-      --font:     'Quicksand', 'Nunito', 'Varela Round', 'Comic Sans MS', sans-serif;
-      --radius:   18px;
-      --shadow:   0 4px 20px rgba(91,38,0,0.13);
-    }
+/* ── Nature BG ── */
+.bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: linear-gradient(180deg, #87ceeb 0%, #b8e8f8 52%, #8dce5a 52%, #5ea33c 100%);
+}
+.bg::before {
+  content: '';
+  position: absolute; bottom: 0; left: -8%; width: 58%; height: 44%;
+  background: #8dce5a;
+  border-radius: 50% 50% 0 0 / 65% 65% 0 0;
+}
+.bg::after {
+  content: '';
+  position: absolute; bottom: 0; right: -4%; width: 52%; height: 36%;
+  background: #5ea33c;
+  border-radius: 50% 50% 0 0 / 65% 65% 0 0;
+}
+.bg-sun {
+  position: fixed; top: 5%; right: 7%;
+  width: 72px; height: 72px;
+  background: radial-gradient(circle, #ffe066, #fdc602);
+  border-radius: 50%;
+  box-shadow: 0 0 0 10px #ffe06644, 0 0 0 22px #fdc60222;
+  z-index: 1;
+}
+.bg-rainbow {
+  position: fixed; top: 2%; right: 12%;
+  width: 160px; height: 80px;
+  border-radius: 80px 80px 0 0;
+  background: transparent;
+  border: 12px solid #e84393;
+  border-bottom: none;
+  box-shadow: 0 -12px 0 #ff8c00, 0 -24px 0 #ffd700, 0 -36px 0 #00b050, 0 -48px 0 #0070c0;
+  z-index: 1; opacity: .75;
+}
+.bg-cloud {
+  position: fixed; z-index: 1;
+  background: #fff; border-radius: 50px;
+}
+.bg-cloud::before, .bg-cloud::after {
+  content: ''; position: absolute;
+  background: #fff; border-radius: 50%;
+}
+.cloud1 { width:110px; height:36px; top:9%; left:4%; }
+.cloud1::before { width:54px; height:50px; top:-26px; left:14px; }
+.cloud1::after  { width:42px; height:42px; top:-18px; left:48px; }
+.cloud2 { width:85px; height:28px; top:15%; left:24%; }
+.cloud2::before { width:42px; height:38px; top:-20px; left:10px; }
+.cloud2::after  { width:34px; height:34px; top:-14px; left:36px; }
+.cloud3 { width:95px; height:32px; top:7%; right:33%; }
+.cloud3::before { width:46px; height:44px; top:-22px; left:13px; }
+.cloud3::after  { width:38px; height:38px; top:-16px; left:42px; }
+.bg-flowers {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 80px;
+  z-index: 1; display: flex; align-items: flex-end;
+  padding: 0 4%; gap: 32px; pointer-events: none;
+}
+.flower { font-size: 1.8rem; animation: sway 3s ease-in-out infinite; line-height: 1; }
+.flower:nth-child(2){animation-delay:.4s}.flower:nth-child(3){animation-delay:.9s;font-size:1.5rem}
+.flower:nth-child(4){animation-delay:1.4s;margin-left:auto}.flower:nth-child(5){animation-delay:.7s}
+@keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pop{from{transform:scale(1.5);opacity:0}to{transform:scale(1);opacity:1}}
 
-    html, body {
-      height: 100%;
-      font-family: var(--font);
-      background: var(--cream);
-      color: var(--brown);
-      overflow-x: hidden;
-    }
+/* ── Screen wrapper ── */
+.screen {
+  position: fixed; inset: 0; z-index: 10;
+  display: none; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.screen.active { display: flex; }
 
-    /* ============================================================
-       DECORATIVE BACKGROUND ELEMENTS
-    ============================================================ */
-    .bg-deco {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .bg-deco img {
-      position: absolute;
-      opacity: 0.18;
-      max-width: 260px;
-    }
-    .bg-deco .deco-tl { top: -40px; left: -40px; width: 300px; transform: rotate(-15deg); }
-    .bg-deco .deco-tr { top: -30px; right: -40px; width: 260px; transform: rotate(10deg); }
-    .bg-deco .deco-bl { bottom: -30px; left: -20px; width: 200px; transform: rotate(15deg); }
-    .bg-deco .deco-br { bottom: -40px; right: -20px; width: 220px; }
+/* ════════════════════════════════
+   INTRO SCREEN
+════════════════════════════════ */
+#screen-intro .card {
+  background: #fffef5;
+  border-radius: 28px;
+  box-shadow: 0 8px 40px rgba(91,38,0,.15);
+  padding: 36px 44px 44px;
+  max-width: 660px; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; text-align: center;
+  position: relative;
+}
+.intro-bee {
+  font-size: 88px;
+  animation: float 2.8s ease-in-out infinite;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.12));
+}
+.intro-title {
+  font-family: var(--fn-display);
+  line-height: 1.1; letter-spacing: 1px;
+}
+.intro-beelo {
+  font-size: clamp(2.6rem, 6vw, 3.8rem);
+  display: block;
+  background: linear-gradient(135deg, #ff8c00, #ffd020, #8dce5a, #00aacc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.intro-challenge {
+  font-family: var(--fn-display);
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--brown); letter-spacing: 3px;
+  display: block; margin-top: 2px;
+}
+.intro-desc {
+  font-size: .97rem; color: #555; line-height: 1.65;
+  max-width: 460px;
+}
+.intro-desc strong { color: var(--brown); }
+.intro-rewards {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+}
+.intro-rewards span {
+  padding: 5px 14px; border-radius: 20px;
+  font-size: .78rem; font-weight: 800; color: #fff;
+}
+.rew-1{background:#ff8c42}.rew-2{background:#a855f7}.rew-3{background:#e8275a}
+.btn-start {
+  margin-top: 4px;
+  background: linear-gradient(135deg, #ff8c42, #ffd020);
+  color: #5b2600; border: none; border-radius: 50px;
+  padding: 15px 52px;
+  font-family: var(--fn-body); font-size: 1.15rem; font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(255,140,66,.5);
+  transition: transform .15s, box-shadow .15s;
+  letter-spacing: .5px;
+}
+.btn-start:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(255,140,66,.6)}
+.intro-gift {
+  position: absolute; right: -14px; bottom: 36px;
+  font-size: 3.2rem;
+  animation: float 3.5s ease-in-out 1s infinite;
+}
 
-    /* ============================================================
-       SCREEN SYSTEM
-    ============================================================ */
-    .screen {
-      display: none;
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      padding: 24px 16px;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .screen.active { display: flex; }
+/* ════════════════════════════════
+   COUNTDOWN SCREEN
+════════════════════════════════ */
+#screen-countdown{flex-direction:column;gap:16px}
+.countdown-num {
+  font-family: var(--fn-display);
+  font-size: clamp(7rem, 22vw, 14rem);
+  color: #fff;
+  text-shadow: 0 8px 30px rgba(91,38,0,.25);
+  line-height: 1; animation: pop .4s ease;
+}
+.countdown-label{font-size:1.3rem;color:#fff;font-weight:800;text-shadow:0 2px 8px rgba(0,0,0,.2)}
 
-    /* ============================================================
-       SHARED COMPONENTS
-    ============================================================ */
-    .card {
-      background: white;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 36px 32px;
-      width: 100%;
-      max-width: 780px;
-    }
+/* ════════════════════════════════
+   GAME SCREEN
+════════════════════════════════ */
+#screen-game{align-items:stretch;padding:10px 14px}
+.game-wrap {
+  background: #fffef5;
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(91,38,0,.14);
+  width: 100%; max-width: 940px; max-height: calc(100vh - 20px);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.game-topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px;
+  border-bottom: 2px solid #f0e8d8;
+  flex-shrink: 0;
+}
+.logo-sm {
+  font-family: var(--fn-display);
+  font-size: 1.3rem; color: var(--orange); flex: 1;
+}
+.logo-sm .lo{color:#ff3b7a}
+.timer-pill {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--orange); color: #fff;
+  border-radius: 50px; padding: 5px 16px;
+  font-family: var(--fn-display); font-size: 1.25rem;
+}
+.game-progress{padding:6px 18px 2px;flex-shrink:0}
+.progress-info{font-size:.78rem;color:#999;font-weight:700;text-align:center;margin-bottom:3px}
+.progress-bar{height:5px;background:#ede8d8;border-radius:3px}
+.progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
+.game-body{display:flex;flex:1;min-height:0}
+.game-bee-side {
+  width: 100px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 6px 8px; gap: 6px;
+}
+.game-bee-em{font-size:3rem;animation:float 2.5s ease-in-out infinite}
+.bubble {
+  background: #fffde7; border: 2px solid var(--yellow);
+  border-radius: 10px; padding: 5px 8px;
+  font-size: .68rem; font-weight: 800; color: var(--brown);
+  text-align: center; position: relative;
+}
+.bubble::after {
+  content: ''; position: absolute; bottom: -9px; left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: var(--yellow);
+}
+.game-center{flex:1;display:flex;flex-direction:column;gap:8px;padding:10px 12px 10px 6px;min-width:0}
+.words-display {
+  flex: 1; font-size: 1rem; line-height: 1.95; color: #aaa;
+  overflow-y: auto; word-break: break-word;
+  background: #faf7ef; border-radius: 12px; border: 2px solid #ede8d8;
+  padding: 12px 16px; min-height: 100px;
+}
+.word{display:inline;margin-right:3px}
+.word.correct{color:var(--green);font-weight:700}
+.word.wrong{color:#e84343;font-weight:700;background:#ffe5e5;border-radius:3px;padding:0 2px}
+.word.current{color:var(--brown);font-weight:800;background:#fff0a0;border-radius:4px;padding:0 3px}
+.game-input {
+  border: 2px solid #ddd; border-radius: 12px;
+  padding: 11px 16px;
+  font-family: var(--fn-body); font-size: .97rem; background: #fff;
+  transition: border-color .2s; outline: none; flex-shrink: 0;
+}
+.game-input:focus{border-color:var(--orange)}
+.game-input.wrong{border-color:#e84343;background:#fff5f5}
+.game-right-side {
+  width: 82px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 6px;
+}
+.counter-box {
+  background: var(--yellow); border-radius: 14px; padding: 10px 8px;
+  text-align: center; box-shadow: 0 3px 10px rgba(253,198,2,.4);
+  min-width: 68px;
+}
+.counter-lbl{font-size:.62rem;font-weight:900;color:var(--brown);text-transform:uppercase;line-height:1.3}
+.counter-val{font-family:var(--fn-display);font-size:2.1rem;color:var(--brown);line-height:1}
 
-    .bee-badge {
-      display: inline-block;
-      font-size: 3rem;
-      line-height: 1;
-      animation: float 3s ease-in-out infinite;
-    }
+/* ════════════════════════════════
+   RESULT SCREEN
+════════════════════════════════ */
+#screen-result .card {
+  background: #fffef5; border-radius: 28px;
+  box-shadow: 0 8px 40px rgba(91,38,0,.15);
+  padding: 32px 44px 40px; max-width: 520px; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; text-align: center; position: relative;
+}
+.result-bee{font-size:76px;animation:float 2.5s ease-in-out infinite}
+.result-banner {
+  background: linear-gradient(135deg, #ff6b8a, #ff3b6a);
+  color: #fff; font-family: var(--fn-display);
+  font-size: 1.75rem; padding: 9px 36px;
+  border-radius: 50px; box-shadow: 0 4px 16px rgba(255,59,106,.4);
+}
+.result-sub{font-size:.9rem;color:#999;font-weight:700}
+.result-count{display:flex;align-items:baseline;gap:8px}
+.result-num{font-family:var(--fn-display);font-size:4rem;color:var(--orange);line-height:1}
+.result-unit{font-size:1rem;color:var(--brown);font-weight:800}
+.result-reward-tag {
+  font-size:.85rem;font-weight:800;color:var(--green);
+  background:#edffd8;border:2px solid #8dce5a;
+  padding:7px 18px;border-radius:20px;
+}
+.btn-claim {
+  background: linear-gradient(135deg,var(--yellow),#ffc107);
+  color: var(--brown); border: none; border-radius: 50px;
+  padding: 13px 44px;
+  font-family: var(--fn-body); font-size: 1.05rem; font-weight: 900;
+  cursor: pointer; box-shadow: 0 4px 16px rgba(253,198,2,.45);
+  transition: transform .15s;
+}
+.btn-claim:hover{transform:translateY(-2px)}
+.no-reward-box {
+  padding: 14px 20px; background: #fff5e5; border-radius: 14px;
+  border: 2px solid #ffcc80; text-align: center;
+}
+.no-reward-box p{font-size:.92rem;color:#aa6600;font-weight:800}
+.no-reward-box small{font-size:.78rem;color:#aaa}
+.result-gift{position:absolute;right:-12px;bottom:28px;font-size:2.8rem;animation:float 3.5s ease-in-out 1s infinite}
+.btn-try-again {
+  background: #fff; color: var(--brown);
+  border: 2px solid var(--brown); border-radius: 50px;
+  padding: 11px 36px;
+  font-family: var(--fn-body); font-size: .95rem; font-weight: 800;
+  cursor: pointer; transition: transform .15s;
+}
+.btn-try-again:hover{transform:translateY(-2px)}
 
-    @keyframes float {
-      0%,100% { transform: translateY(0); }
-      50%      { transform: translateY(-10px); }
-    }
+/* ════════════════════════════════
+   CLAIM SCREEN
+════════════════════════════════ */
+#screen-claim .claim-wrap {
+  background: #fffef5; border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(91,38,0,.15);
+  max-width: 800px; width: 100%;
+  display: flex; overflow: hidden;
+  max-height: calc(100vh - 32px);
+}
+.claim-left {
+  flex: 1.1; background: linear-gradient(165deg,#fffde8,#fff8d0);
+  padding: 28px 24px; display: flex; flex-direction: column;
+  gap: 12px; position: relative; overflow: hidden;
+}
+.claim-logo-title{font-family:var(--fn-display);font-size:1.4rem;color:var(--orange)}
+.claim-logo-title .lo{color:#ff3b7a}
+.claim-logo-sub{font-size:.65rem;font-weight:900;color:var(--brown);text-transform:uppercase;letter-spacing:2px}
+.claim-logo-slogan{font-size:.7rem;color:#aaa}
+.claim-banner {
+  background: linear-gradient(135deg,#ff6b8a,#ff3b6a);
+  color: #fff; border-radius: 10px;
+  padding: 9px 14px; text-align: center;
+  font-size: .76rem; font-weight: 900;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.claim-prize-box {
+  background: #fff; border-radius: 16px;
+  padding: 16px 14px; border: 2px solid #ffe9a0;
+  flex: 1; display: flex; flex-direction: column;
+  gap: 10px; align-items: center; justify-content: center;
+  text-align: center; overflow: auto;
+}
+.cp-title{font-family:var(--fn-display);font-size:1.5rem;color:var(--brown)}
+.voucher-big{font-family:var(--fn-display);font-size:3rem;color:var(--orange);line-height:1}
+.voucher-detail{font-size:.78rem;color:#888}
+.sticker-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.sticker-item{background:#fffde8;border:2px solid #ffd;border-radius:10px;padding:9px 6px;font-size:.68rem;font-weight:800;color:var(--brown);text-align:center}
+.sticker-item .si{font-size:1.5rem;display:block;margin-bottom:3px}
+.kit-emoji{font-size:3.2rem;text-align:center}
+.kit-name{font-weight:900;color:var(--brown);font-size:.9rem}
+.claim-right {
+  flex: 1; padding: 28px 24px;
+  display: flex; flex-direction: column;
+  gap: 12px; overflow-y: auto;
+}
+.claim-right-header{display:flex;align-items:center;gap:8px}
+.claim-right-title{font-family:var(--fn-display);font-size:1.3rem;color:var(--brown)}
+.claim-right-title .lo{color:#ff3b7a}
+.claim-right-sub{font-size:.78rem;color:#999;line-height:1.45}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:.74rem;font-weight:800;color:var(--brown);display:flex;align-items:center;gap:4px}
+.form-group input,.form-group textarea {
+  border: 2px solid #e8e0d0; border-radius: 10px;
+  padding: 9px 13px;
+  font-family: var(--fn-body); font-size: .88rem;
+  background: #faf8f3; outline: none;
+  transition: border-color .2s; width: 100%;
+}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--orange)}
+.form-group textarea{resize:none;height:64px}
+.btn-submit {
+  background: linear-gradient(135deg,var(--brown),#7a3500);
+  color: var(--yellow); border: none; border-radius: 50px;
+  padding: 13px 24px; width: 100%;
+  font-family: var(--fn-body); font-size: .97rem; font-weight: 900;
+  cursor: pointer; letter-spacing: 1px;
+  box-shadow: 0 4px 16px rgba(91,38,0,.35);
+  transition: transform .15s;
+}
+.btn-submit:hover{transform:translateY(-2px)}
 
-    .game-title {
-      font-size: clamp(1.6rem, 5vw, 2.6rem);
-      font-weight: 800;
-      color: var(--brown);
-      letter-spacing: 0.02em;
-      line-height: 1.1;
-    }
-
-    .subtitle {
-      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
-      color: var(--brown-lt);
-      line-height: 1.6;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 36px;
-      border: none;
-      border-radius: 50px;
-      font-family: var(--font);
-      font-size: 1.1rem;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-      letter-spacing: 0.05em;
-    }
-    .btn:active { transform: scale(0.96); }
-
-    .btn-primary {
-      background: var(--yellow);
-      color: var(--brown);
-      box-shadow: 0 4px 0 var(--yellow-dk), 0 6px 18px rgba(253,198,2,0.4);
-    }
-    .btn-primary:hover {
-      background: #ffe040;
-      box-shadow: 0 2px 0 var(--yellow-dk), 0 4px 12px rgba(253,198,2,0.4);
-      transform: translateY(-2px);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--brown);
-      border: 2.5px solid var(--brown);
-      box-shadow: none;
-    }
-    .btn-outline:hover {
-      background: var(--cream);
-      transform: translateY(-2px);
-    }
-
-    .btn-green {
-      background: var(--green);
-      color: white;
-      box-shadow: 0 4px 0 #2e7d52, 0 6px 18px rgba(76,175,125,0.35);
-    }
-    .btn-green:hover {
-      background: #5bc48e;
-      transform: translateY(-2px);
-    }
-
-    /* ============================================================
-       SCREEN 1 – INTRO
-    ============================================================ */
-    #screen-intro .card {
-      text-align: center;
-    }
-
-    .intro-icons {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .intro-icons img {
-      width: 64px;
-      height: 64px;
-      object-fit: contain;
-      animation: float 3s ease-in-out infinite;
-    }
-    .intro-icons img:nth-child(2) { animation-delay: 0.5s; }
-    .intro-icons img:nth-child(3) { animation-delay: 1s; }
-    .intro-icons img:nth-child(4) { animation-delay: 1.5s; }
-
-    .keyboard-title {
-      font-size: clamp(0.8rem, 2vw, 1rem);
-      letter-spacing: 0.25em;
-      color: var(--yellow-dk);
-      font-weight: 700;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-
-    .reward-preview {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 28px;
-    }
-    .reward-chip {
-      background: var(--cream);
-      border: 2px solid var(--cream-dk);
-      border-radius: 50px;
-      padding: 8px 18px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--brown-lt);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* ============================================================
-       SCREEN 2 – COUNTDOWN
-    ============================================================ */
-    #screen-countdown {
-      text-align: center;
-    }
-
-    .countdown-number {
-      font-size: clamp(6rem, 25vw, 12rem);
-      font-weight: 900;
-      color: var(--yellow);
-      text-shadow: 0 6px 0 var(--yellow-dk), 0 12px 30px rgba(253,198,2,0.3);
-      line-height: 1;
-      animation: popIn 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-      display: inline-block;
-    }
-    .countdown-go {
-      font-size: clamp(4rem, 18vw, 9rem);
-      font-weight: 900;
-      color: var(--green);
-      text-shadow: 0 6px 0 #2e7d52;
-      animation: popIn 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-      display: inline-block;
-    }
-
-    @keyframes popIn {
-      0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
-      60%  { transform: scale(1.15) rotate(3deg); }
-      100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    }
-
-    /* ============================================================
-       SCREEN 3 – GAME
-    ============================================================ */
-    #screen-game .card {
-      max-width: 860px;
-    }
-
-    .game-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .timer-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .timer-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--brown-lt);
-      font-weight: 700;
-    }
-    .timer-display {
-      font-size: 2.8rem;
-      font-weight: 900;
-      color: var(--brown);
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-      transition: color 0.3s;
-    }
-    .timer-display.urgent { color: var(--red); animation: pulse 0.5s infinite; }
-
-    @keyframes pulse {
-      0%,100% { transform: scale(1); }
-      50%      { transform: scale(1.06); }
-    }
-
-    .word-count-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .word-count-num {
-      font-size: 2.8rem;
-      font-weight: 900;
-      color: var(--green);
-      line-height: 1;
-    }
-    .word-count-label {
-      font-size: 0.7rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--brown-lt);
-      font-weight: 700;
-    }
-
-    /* Timer bar */
-    .timer-bar-outer {
-      height: 10px;
-      background: var(--cream-dk);
-      border-radius: 99px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-    .timer-bar-inner {
-      height: 100%;
-      border-radius: 99px;
-      background: linear-gradient(90deg, var(--yellow), #ff9f40);
-      transition: width 1s linear, background 0.5s;
-    }
-
-    /* Text display */
-    .text-display-wrapper {
-      background: var(--cream);
-      border: 2.5px solid var(--cream-dk);
-      border-radius: var(--radius);
-      padding: 20px 22px;
-      font-size: clamp(1rem, 2.5vw, 1.18rem);
-      line-height: 1.9;
-      word-break: break-word;
-      min-height: 110px;
-      user-select: none;
-    }
-
-    .word-span {
-      display: inline;
-      padding: 1px 2px;
-      border-radius: 4px;
-      transition: background 0.15s, color 0.15s;
-      white-space: pre-wrap;
-    }
-    .word-span.correct  { color: var(--green); font-weight: 700; }
-    .word-span.wrong    { color: var(--red); text-decoration: underline wavy var(--red); }
-    .word-span.current  { background: var(--yellow); color: var(--brown); font-weight: 700; border-radius: 6px; }
-
-    /* Input field */
-    .typing-input {
-      width: 100%;
-      padding: 14px 20px;
-      font-family: var(--font);
-      font-size: 1.2rem;
-      font-weight: 600;
-      border: 3px solid var(--cream-dk);
-      border-radius: var(--radius);
-      background: white;
-      color: var(--brown);
-      outline: none;
-      margin-top: 16px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .typing-input:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 4px rgba(253,198,2,0.2);
-    }
-    .typing-input.input-wrong {
-      border-color: var(--red);
-      box-shadow: 0 0 0 4px rgba(224,85,85,0.15);
-    }
-    .typing-input:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .game-hint {
-      font-size: 0.8rem;
-      color: var(--brown-lt);
-      margin-top: 8px;
-      text-align: center;
-    }
-
-    /* ============================================================
-       SCREEN 4 – RESULT
-    ============================================================ */
-    #screen-result .card { text-align: center; }
-
-    .result-badge {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3.5rem;
-      margin: 0 auto 20px;
-      box-shadow: var(--shadow);
-      animation: popIn 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97);
-    }
-    .badge-none    { background: var(--cream); }
-    .badge-level1  { background: linear-gradient(135deg, #fff3cd, var(--yellow)); }
-    .badge-level2  { background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
-    .badge-level3  { background: linear-gradient(135deg, #e3f2fd, #90caf9); }
-
-    .score-big {
-      font-size: clamp(3rem, 10vw, 5rem);
-      font-weight: 900;
-      color: var(--brown);
-      line-height: 1;
-    }
-    .score-label { font-size: 1rem; color: var(--brown-lt); margin-top: 4px; font-weight: 600; }
-
-    .reward-box {
-      background: var(--cream);
-      border: 2.5px dashed var(--yellow);
-      border-radius: var(--radius);
-      padding: 20px 24px;
-      margin: 20px 0;
-      text-align: left;
-    }
-    .reward-level-name {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--brown);
-      margin-bottom: 6px;
-    }
-    .reward-desc {
-      font-size: 0.95rem;
-      color: var(--brown-lt);
-      line-height: 1.5;
-    }
-    .reward-items {
-      list-style: none;
-      margin-top: 8px;
-    }
-    .reward-items li::before { content: '✦ '; color: var(--yellow-dk); font-weight: 700; }
-
-    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
-
-    /* ============================================================
-       SCREEN 5 – CLAIM FORM
-    ============================================================ */
-    #screen-claim .card { max-width: 560px; }
-
-    .form-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
-    .form-subtitle { font-size: 0.9rem; color: var(--brown-lt); margin-bottom: 24px; }
-
-    .form-group { margin-bottom: 18px; }
-    .form-label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--brown-lt);
-      margin-bottom: 6px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .form-input, .form-textarea {
-      width: 100%;
-      padding: 13px 16px;
-      font-family: var(--font);
-      font-size: 1rem;
-      font-weight: 600;
-      border: 2.5px solid var(--cream-dk);
-      border-radius: var(--radius);
-      background: white;
-      color: var(--brown);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .form-input:focus, .form-textarea:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 4px rgba(253,198,2,0.2);
-    }
-    .form-textarea { resize: vertical; min-height: 80px; }
-
-    .reward-reminder {
-      background: var(--cream);
-      border-left: 4px solid var(--yellow);
-      border-radius: 0 12px 12px 0;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-      color: var(--brown);
-      font-weight: 600;
-    }
-
-    /* ============================================================
-       SCREEN 6 – THANK YOU
-    ============================================================ */
-    #screen-thanks .card { text-align: center; }
-
-    .thanks-bee {
-      width: 100px;
-      height: 100px;
-      object-fit: contain;
-      margin-bottom: 16px;
-      animation: float 2.5s ease-in-out infinite;
-    }
-
-    .confetti-burst {
-      font-size: 2rem;
-      letter-spacing: 0.2em;
-      margin: 12px 0;
-    }
-
-    /* ============================================================
-       RESPONSIVE
-    ============================================================ */
-    @media (max-width: 600px) {
-      .card { padding: 24px 18px; }
-      .game-header { justify-content: center; }
-      .text-display-wrapper { font-size: 0.95rem; padding: 14px 16px; }
-      .typing-input { font-size: 1.05rem; }
-    }
-
-    /* ============================================================
-       ANIMATIONS
-    ============================================================ */
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .screen.active .card { animation: slideUp 0.4s ease; }
-    .screen.active > *:not(.card) { animation: slideUp 0.4s ease; }
-  </style>
+/* ════════════════════════════════
+   THANK YOU SCREEN
+════════════════════════════════ */
+#screen-thankyou .card {
+  background: #fffef5; border-radius: 28px;
+  box-shadow: 0 8px 40px rgba(91,38,0,.15);
+  padding: 36px 48px 44px; max-width: 600px; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; text-align: center; position: relative;
+}
+.ty-bee{font-size:68px;animation:float 2.5s ease-in-out infinite}
+.ty-title{font-family:var(--fn-display);font-size:2.2rem;color:var(--brown);display:flex;align-items:center;gap:8px}
+.ty-desc{font-size:.93rem;color:#666;line-height:1.7;max-width:400px}
+.ty-desc strong{color:var(--brown)}
+.ty-keep {
+  background: var(--green); color: #fff;
+  border-radius: 50px; padding: 8px 22px;
+  font-size: .88rem; font-weight: 800;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.ty-buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
+.btn-again {
+  flex:1;min-width:150px;
+  background: linear-gradient(135deg,var(--orange),#ffd020);
+  color: var(--brown); border: none; border-radius: 50px;
+  padding: 12px 18px;
+  font-family: var(--fn-body); font-size: .92rem; font-weight: 900;
+  cursor: pointer; box-shadow: 0 4px 14px rgba(255,140,66,.4);
+  transition: transform .15s;
+}
+.btn-homepage {
+  flex:1;min-width:150px;
+  background: #fff; color: var(--brown);
+  border: 2px solid var(--brown); border-radius: 50px;
+  padding: 12px 18px;
+  font-family: var(--fn-body); font-size: .92rem; font-weight: 900;
+  cursor: pointer; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: transform .15s;
+}
+.btn-again:hover,.btn-homepage:hover{transform:translateY(-2px)}
+.ty-gift{position:absolute;right:-10px;bottom:28px;text-align:center;font-size:2.6rem;animation:float 3.5s ease-in-out 1s infinite}
+.ty-gift small{display:block;font-size:.52rem;font-weight:900;color:var(--brown);line-height:1}
+</style>
 </head>
 <body>
 
-  <!-- Decorative background -->
-  <div class="bg-deco">
-    <img class="deco-tl" src="cdn/shop/files/rainbow-icon-v23ef3.png" alt="">
-    <img class="deco-tr" src="cdn/shop/files/earth-icon-v2cb2a.png" alt="">
-    <img class="deco-bl" src="cdn/shop/files/crayons-icon-v2a2b4.png" alt="">
-    <img class="deco-br" src="cdn/shop/files/bee-icon5a7f.png" alt="">
-  </div>
+<!-- Nature BG -->
+<div class="bg"></div>
+<div class="bg-sun"></div>
+<div class="bg-rainbow"></div>
+<div class="bg-cloud cloud1"></div>
+<div class="bg-cloud cloud2"></div>
+<div class="bg-cloud cloud3"></div>
+<div class="bg-flowers">
+  <span class="flower">🌸</span>
+  <span class="flower">🌼</span>
+  <span class="flower">🌻</span>
+  <span class="flower">🌺</span>
+  <span class="flower">🌸</span>
+</div>
 
-  <!-- ============================================================
-       SCREEN 1 – INTRO
-  ============================================================ -->
-  <div id="screen-intro" class="screen active">
-    <div class="card">
-      <div class="intro-icons">
-        <img src="cdn/shop/files/bee-icon5a7f.png" alt="Bee">
-        <img src="cdn/shop/files/rainbow-icon-v23ef3.png" alt="Rainbow">
-        <img src="cdn/shop/files/crayons-icon-v2a2b4.png" alt="Crayons">
-        <img src="cdn/shop/files/earth-icon-v2cb2a.png" alt="Earth">
-      </div>
-
-      <p class="keyboard-title">⌨ Beelo Typing Challenge</p>
-      <h1 class="game-title" style="margin-bottom: 16px;">
-        "Little Fingers,<br>Big Creativity!"
-      </h1>
-      <p class="subtitle" style="margin-bottom: 28px;">
-        Bạn đã sẵn sàng trở thành <strong>Nhà Đánh Máy Nhí</strong> chưa?<br>
-        Hãy gõ thật nhanh và chính xác trong <strong>60 giây</strong> để nhận những phần quà hấp dẫn từ Beelo! 🐝
-      </p>
-
-      <div style="display:flex; justify-content:center; margin-bottom:28px;">
-        <button class="btn btn-primary" onclick="startCountdown()" style="font-size:1.25rem; padding:16px 48px;">
-          🚀 START GAME
-        </button>
-      </div>
-
-      <div class="reward-preview">
-        <div class="reward-chip">🐝 30–59 từ → Voucher 10%</div>
-        <div class="reward-chip">🌈 60–89 từ → Sticker Set</div>
-        <div class="reward-chip">👑 90+ từ → Starter Kit</div>
-      </div>
+<!-- ══ INTRO ══ -->
+<div id="screen-intro" class="screen active">
+  <div class="card">
+    <div class="intro-bee">🐝</div>
+    <div class="intro-title">
+      <span class="intro-beelo">BEELƠ</span>
+      <span class="intro-challenge">TYPING CHALLENGE</span>
     </div>
-    <div style="margin-top:20px;">
-      <a href="index.html" class="btn btn-outline" style="font-size:0.9rem; padding:10px 24px;">← Về trang chủ</a>
-    </div>
-  </div>
-
-  <!-- ============================================================
-       SCREEN 2 – COUNTDOWN
-  ============================================================ -->
-  <div id="screen-countdown" class="screen">
-    <div id="countdown-display" class="countdown-number">3</div>
-    <p style="font-size:1.2rem; font-weight:700; color:var(--brown-lt); margin-top:16px;">
-      Chuẩn bị gõ thật nhanh nhé! 🐝
+    <p class="intro-desc">
+      Bạn đã sẵn sàng trở thành <strong>Nhà Đánh Máy Nhí</strong> chưa?<br>
+      Hãy gõ thật nhanh và chính xác trong <strong>60 giây</strong><br>
+      để nhận những phần quà hấp dẫn từ Beelơ! 🐝
     </p>
-  </div>
-
-  <!-- ============================================================
-       SCREEN 3 – GAME
-  ============================================================ -->
-  <div id="screen-game" class="screen">
-    <div class="card">
-      <!-- Header: timer + word count -->
-      <div class="game-header">
-        <div class="timer-block">
-          <span class="timer-label">⏱ Thời gian</span>
-          <span id="timer-display" class="timer-display">01:00</span>
-        </div>
-
-        <div style="text-align:center;">
-          <img src="cdn/shop/files/bee-icon5a7f.png" alt="Beelo" style="width:52px; height:52px; object-fit:contain; animation: float 2.5s ease-in-out infinite;">
-        </div>
-
-        <div class="word-count-block">
-          <span id="word-count-num" class="word-count-num">0</span>
-          <span class="word-count-label">✅ Từ đúng</span>
-        </div>
-      </div>
-
-      <!-- Timer bar -->
-      <div class="timer-bar-outer">
-        <div id="timer-bar" class="timer-bar-inner" style="width:100%;"></div>
-      </div>
-
-      <!-- Paragraph text -->
-      <div id="text-display" class="text-display-wrapper"></div>
-
-      <!-- Input -->
-      <input
-        type="text"
-        id="typing-input"
-        class="typing-input"
-        placeholder="Bắt đầu gõ từ đầu tiên..."
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="off"
-        spellcheck="false"
-        oninput="handleInput(event)"
-        onkeydown="handleKeydown(event)"
-      >
-      <p class="game-hint">💡 Nhấn <kbd style="background:var(--cream-dk);padding:1px 6px;border-radius:4px;">Space</kbd> sau mỗi từ để chuyển sang từ tiếp theo</p>
+    <div class="intro-rewards">
+      <span class="rew-1">🐝 30–59 từ → Voucher 10%</span>
+      <span class="rew-2">🌈 60–89 từ → Sticker Set</span>
+      <span class="rew-3">👑 90+ từ → Starter Kit</span>
     </div>
+    <button class="btn-start" onclick="startCountdown()">🚀 START GAME &nbsp;›</button>
+    <div class="intro-gift">🎁</div>
   </div>
+</div>
 
-  <!-- ============================================================
-       SCREEN 4 – RESULT
-  ============================================================ -->
-  <div id="screen-result" class="screen">
-    <div class="card">
-      <div id="result-badge" class="result-badge badge-level1">🐝</div>
-      <div id="result-headline" style="font-size:1.6rem;font-weight:900;margin-bottom:4px;">🎉 Great Job!</div>
-      <div class="score-big" id="result-score">0</div>
-      <div class="score-label">từ chính xác trong 60 giây</div>
+<!-- ══ COUNTDOWN ══ -->
+<div id="screen-countdown" class="screen">
+  <div class="countdown-num" id="cd-num">3</div>
+  <div class="countdown-label">Sẵn sàng gõ nào! ✨</div>
+</div>
 
-      <div id="reward-box" class="reward-box" style="display:none;">
-        <div id="reward-level-name" class="reward-level-name"></div>
-        <div id="reward-desc" class="reward-desc"></div>
-        <ul id="reward-items" class="reward-items"></ul>
+<!-- ══ GAME ══ -->
+<div id="screen-game" class="screen">
+  <div class="game-wrap">
+    <div class="game-topbar">
+      <div class="logo-sm">Beel<span class="lo">ơ</span></div>
+      <div class="timer-pill">⏰ <span id="timer-disp">01:00</span></div>
+      <div style="flex:1"></div>
+    </div>
+    <div class="game-progress">
+      <div class="progress-info" id="prog-text">0 / 0 words completed</div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="game-body">
+      <div class="game-bee-side">
+        <div class="game-bee-em">🐝</div>
+        <div class="bubble">You can<br>do it!</div>
       </div>
-
-      <div class="result-actions">
-        <button id="btn-claim" class="btn btn-green" onclick="showScreen('screen-claim')" style="display:none;">
-          🎁 Nhận quà ngay!
-        </button>
-        <button class="btn btn-primary" onclick="restartGame()">🔄 Chơi lại</button>
-        <a href="index.html" class="btn btn-outline">🏠 Về trang chủ</a>
+      <div class="game-center">
+        <div class="words-display" id="words-disp"></div>
+        <input class="game-input" id="game-inp"
+          placeholder="Bắt đầu gõ tại đây..."
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="game-right-side">
+        <div class="counter-box">
+          <div class="counter-lbl">Words<br>typed</div>
+          <div class="counter-val" id="cnt-val">0</div>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ============================================================
-       SCREEN 5 – CLAIM FORM
-  ============================================================ -->
-  <div id="screen-claim" class="screen">
-    <div class="card">
-      <div style="text-align:center; margin-bottom:20px;">
-        <img src="cdn/shop/files/bee-icon5a7f.png" alt="Beelo" style="width:64px;height:64px;object-fit:contain;">
+<!-- ══ RESULT ══ -->
+<div id="screen-result" class="screen">
+  <div class="card">
+    <div class="result-bee" id="res-bee">🐝</div>
+    <div class="result-banner" id="res-banner">Great Job!</div>
+    <div class="result-sub">Bạn đã gõ được:</div>
+    <div class="result-count">
+      <span class="result-num" id="res-num">0</span>
+      <span class="result-unit">từ chính xác</span>
+    </div>
+    <div class="result-reward-tag" id="res-tag" style="display:none"></div>
+    <button class="btn-claim" id="btn-claim" onclick="showClaim()" style="display:none">Hãy nhận quà nào &nbsp;›</button>
+    <div class="no-reward-box" id="res-no-reward" style="display:none">
+      <p>Hãy thử lại nhé! 💪</p>
+      <small>Gõ ít nhất 30 từ để nhận phần thưởng.</small>
+    </div>
+    <button class="btn-try-again" onclick="resetGame()">🔄 Chơi lại</button>
+    <div class="result-gift">🎁</div>
+  </div>
+</div>
+
+<!-- ══ CLAIM ══ -->
+<div id="screen-claim" class="screen">
+  <div class="claim-wrap">
+    <div class="claim-left">
+      <div>
+        <div class="claim-logo-title">Beel<span class="lo">ơ</span> <span style="font-size:.75rem;font-family:var(--fn-body);font-weight:900;color:#888">MINI BUZZ SET</span></div>
+        <div class="claim-logo-sub">Creative Tools for Kids</div>
+        <div class="claim-logo-slogan">Sáng tạo mỗi ngày, học hỏi thật vui lên ✨</div>
       </div>
-      <h2 class="form-title">🎁 Nhận quà từ Beelo</h2>
-      <p class="form-subtitle">
-        Vui lòng để lại thông tin để đội ngũ Beelo liên hệ sớm nhất.<br>
-        Phần thưởng: <strong id="claim-reward-name" style="color:var(--brown);"></strong>
-      </p>
-
-      <div id="reward-reminder" class="reward-reminder"></div>
-
-      <form id="claim-form" onsubmit="submitClaim(event)" novalidate>
+      <div class="claim-banner">🎁 NHẬN QUÀ TỪ BEELƠ 🎁</div>
+      <div class="claim-prize-box" id="claim-prize"></div>
+    </div>
+    <div class="claim-right">
+      <div class="claim-right-header">
+        <span style="font-size:1.7rem">🎁</span>
+        <div class="claim-right-title">Nhận quà<br>từ Beel<span class="lo">ơ</span></div>
+      </div>
+      <div class="claim-right-sub">Vui lòng để lại thông tin để đội ngũ <strong>Beelơ</strong> liên hệ bạn sớm nhất.</div>
+      <form onsubmit="submitClaim(event)" style="display:flex;flex-direction:column;gap:9px">
         <div class="form-group">
-          <label class="form-label" for="field-name">Họ và tên *</label>
-          <input id="field-name" class="form-input" type="text" placeholder="Nguyễn Văn A" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="field-email">Email *</label>
-          <input id="field-email" class="form-input" type="email" placeholder="example@email.com" required>
+          <label>👤 Họ và tên</label>
+          <input type="text" id="f-name" placeholder="Nhập họ và tên của bạn" required>
         </div>
         <div class="form-group">
-          <label class="form-label" for="field-phone">Số điện thoại *</label>
-          <input id="field-phone" class="form-input" type="tel" placeholder="0901 234 567" required>
+          <label>✉️ Email</label>
+          <input type="email" id="f-email" placeholder="Nhập email của bạn" required>
         </div>
         <div class="form-group">
-          <label class="form-label" for="field-note">Câu hỏi hoặc ghi chú khác</label>
-          <textarea id="field-note" class="form-textarea" placeholder="Nhập ghi chú (nếu có)..."></textarea>
+          <label>📞 Số điện thoại</label>
+          <input type="tel" id="f-phone" placeholder="Nhập số điện thoại của bạn">
         </div>
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <button type="submit" class="btn btn-green" style="width:100%;">
-            🎁 NHẬN QUÀ NGAY
-          </button>
-          <button type="button" class="btn btn-outline" onclick="showScreen('screen-result')" style="width:100%;">
-            ← Quay lại màn hình kết quả
-          </button>
+        <div class="form-group">
+          <label>💬 Câu hỏi hoặc ghi chú khác</label>
+          <textarea id="f-note" placeholder="Nhập câu hỏi hoặc ghi chú của bạn"></textarea>
         </div>
+        <button type="submit" class="btn-submit">HOÀN TẤT &nbsp;›</button>
       </form>
     </div>
   </div>
+</div>
 
-  <!-- ============================================================
-       SCREEN 6 – THANK YOU
-  ============================================================ -->
-  <div id="screen-thanks" class="screen">
-    <div class="card" style="text-align:center;">
-      <div class="confetti-burst">🎊 🐝 🎊</div>
-      <img class="thanks-bee" src="cdn/shop/files/bee-icon5a7f.png" alt="Beelo">
-      <h2 style="font-size:2rem; font-weight:900; margin-bottom:12px; color:var(--yellow-dk);">
-        💛 CẢM ƠN BẠN!
-      </h2>
-      <p class="subtitle" style="margin-bottom:8px;">
-        Cảm ơn bạn đã tham gia <strong>Beelo Typing Challenge</strong>.
-      </p>
-      <p class="subtitle" style="margin-bottom:8px;">
-        Hy vọng bạn đã có những phút giây vừa học vừa chơi thật vui vẻ.
-      </p>
-      <p class="subtitle" style="margin-bottom:28px;">
-        Hẹn gặp lại bạn trong những hoạt động sáng tạo tiếp theo cùng Beelo!
-      </p>
-
-      <div id="thanks-score-summary" style="background:var(--cream); border-radius:var(--radius); padding:16px 20px; margin-bottom:24px; display:inline-block;">
-        <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--brown-lt); font-weight:700;">Kết quả của bạn</div>
-        <div id="thanks-words" style="font-size:2rem; font-weight:900; color:var(--green);">0 từ</div>
-        <div id="thanks-level" style="font-size:1rem; font-weight:700; color:var(--brown-lt);"></div>
-      </div>
-
-      <p style="font-size:1.1rem; font-weight:800; color:var(--brown); margin-bottom:24px;">
-        🐝 Keep Creating With Beelo!
-      </p>
-
-      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="restartGame()">🔄 PLAY AGAIN</button>
-        <a href="index.html" class="btn btn-outline">🏠 RETURN HOMEPAGE</a>
-      </div>
+<!-- ══ THANK YOU ══ -->
+<div id="screen-thankyou" class="screen">
+  <div class="card">
+    <div class="ty-bee">🐝</div>
+    <div class="ty-title">💛 CẢM ƠN BẠN!</div>
+    <p class="ty-desc">
+      Cảm ơn bạn đã tham gia <strong>Beelơ Typing Challenge</strong>.<br>
+      Hy vọng bạn đã có những phút giây vừa học vừa chơi thật vui vẻ.<br>
+      Hẹn gặp lại bạn trong những hoạt động sáng tạo tiếp theo cùng Beelơ!
+    </p>
+    <div class="ty-keep">🐝 Keep Creating With Beelơ!</div>
+    <div class="ty-buttons">
+      <button class="btn-again" onclick="resetGame()">🔄 PLAY AGAIN</button>
+      <a class="btn-homepage" href="index.html">🏠 RETURN HOMEPAGE</a>
     </div>
+    <div class="ty-gift">🎁<small>THANK YOU!</small></div>
   </div>
+</div>
 
-  <script>
-    /* ============================================================
-       PARAGRAPHS
-    ============================================================ */
-    const PARAGRAPHS = [
-      // Paragraph 1 – Beelo the Busy Little Bee
-      `Every morning Beelo the little bee wakes up early to begin a brand new day full of adventure and learning Beelo loves flying around the garden visiting colorful flowers and meeting friendly animals along the way As Beelo explores nature he discovers new things about plants trees and the world around him He believes that every day is a wonderful opportunity to learn create and grow Whether it is trying something new helping a friend or practicing an important skill Beelo always gives his best effort He knows that with patience determination and a positive attitude anyone can achieve great things and turn small dreams into amazing accomplishments`,
+<script>
+const PARAGRAPHS = [
+  "Every morning Beelo the little bee wakes up early to begin a brand new day full of adventure and learning Beelo loves flying around the garden visiting colorful flowers and meeting friendly animals along the way As Beelo explores nature he discovers new things about plants trees and the world around him He believes that every day is a wonderful opportunity to learn create and grow Whether it is trying something new helping a friend or practicing an important skill Beelo always gives his best effort He knows that with patience determination and a positive attitude anyone can achieve great things and turn small dreams into amazing accomplishments",
+  "One sunny day Beelo and his rainbow friends set out on a magical journey to collect colors from around the world They traveled across green fields sparkling rivers and beautiful forests filled with singing birds Along the way they faced exciting challenges that taught them about friendship teamwork and courage Whenever they encountered a problem they worked together to find a solution and encouraged one another to keep going As they continued their adventure they gathered bright colors from every place they visited By the end of the journey they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere",
+  "Today is the biggest creative festival of the year and Beelo is excited to welcome children from all over the world The festival is filled with fun activities such as drawing coloring storytelling and creating wonderful art projects Every child brings unique ideas and imagination to share with others Some children draw beautiful forests while others create colorful oceans magical castles or even planets in outer space Beelo encourages everyone to express themselves freely because every idea is valuable and special Throughout the day children learn that creativity grows when they are confident curious and willing to try new things By the end of the festival everyone leaves with happy memories new friends and inspiration to continue exploring their creativity every day"
+];
 
-      // Paragraph 2 – The Rainbow Adventure
-      `One sunny day Beelo and his rainbow friends set out on a magical journey to collect colors from around the world They traveled across green fields sparkling rivers and beautiful forests filled with singing birds Along the way they faced exciting challenges that taught them about friendship teamwork and courage Whenever they encountered a problem they worked together to find a solution and encouraged one another to keep going As they continued their adventure they gathered bright colors from every place they visited By the end of the journey they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere`,
+const REWARDS = {
+  none:   { tier: 0, label: null },
+  level1: { tier: 1, label: '🐝 Voucher giảm 10% (tối đa 100.000 VNĐ)' },
+  level2: { tier: 2, label: '🌈 Bộ Sticker Set Beelơ' },
+  level3: { tier: 3, label: '👑 Beelơ Mini Buzz Starter Kit' },
+};
 
-      // Paragraph 3 – Beelo's Creative Festival
-      `Today is the biggest creative festival of the year and Beelo is excited to welcome children from all over the world The festival is filled with fun activities such as drawing coloring storytelling and creating wonderful art projects Every child brings unique ideas and imagination to share with others Some children draw beautiful forests while others create colorful oceans magical castles or even planets in outer space Beelo encourages everyone to express themselves freely because every idea is valuable and special Throughout the day children learn that creativity grows when they are confident curious and willing to try new things`
-    ];
+let state = {
+  words: [], idx: 0, correct: 0,
+  timeLeft: 60, timer: null, active: false,
+  reward: null, finalCount: 0,
+};
 
-    /* ============================================================
-       REWARD CONFIG
-    ============================================================ */
-    const REWARDS = {
-      none: {
-        level: 'none',
-        emoji: '😊',
-        badgeClass: 'badge-none',
-        headline: 'Cố lên bạn ơi!',
-        levelName: null,
-        desc: null,
-        items: [],
-        showClaim: false
-      },
-      level1: {
-        level: 'level1',
-        emoji: '🐝',
-        badgeClass: 'badge-level1',
-        headline: '🎉 Great Job!',
-        levelName: '🐝 Level 1 – Little Bee',
-        desc: 'Chúc mừng! Bạn nhận được:',
-        items: ['Voucher giảm giá 10%', 'Giảm tối đa 100.000 VNĐ cho đơn hàng tiếp theo'],
-        showClaim: true
-      },
-      level2: {
-        level: 'level2',
-        emoji: '🌈',
-        badgeClass: 'badge-level2',
-        headline: '🎉 Amazing!',
-        levelName: '🌈 Level 2 – Creative Bee',
-        desc: 'Xuất sắc! Bạn nhận được bộ Sticker Beelo:',
-        items: ['Sticker chú ong Beelo', 'Sticker cầu vồng', 'Sticker sáng tạo', 'Sticker học tập'],
-        showClaim: true
-      },
-      level3: {
-        level: 'level3',
-        emoji: '👑',
-        badgeClass: 'badge-level3',
-        headline: '🏆 Super Bee Champion!',
-        levelName: '👑 Level 3 – Super Bee Champion',
-        desc: 'Tuyệt vời! Bạn là nhà vô địch! Phần thưởng Beelo Starter Hive Kit:',
-        items: ['6 Crayons beeswax', 'Giấy vẽ cao cấp', 'Sách tô màu Beelo', '2 hộp màu Dough', 'Túi vải Beelo'],
-        showClaim: true
-      }
-    };
+function getReward(n) {
+  if (n >= 90) return REWARDS.level3;
+  if (n >= 60) return REWARDS.level2;
+  if (n >= 30) return REWARDS.level1;
+  return REWARDS.none;
+}
 
-    /* ============================================================
-       STATE
-    ============================================================ */
-    let state = {
-      words: [],
-      currentIndex: 0,
-      correctCount: 0,
-      timeLeft: 60,
-      timer: null,
-      selectedParagraph: '',
-      gameActive: false,
-      finalReward: null
-    };
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-    /* ============================================================
-       SCREEN NAVIGATION
-    ============================================================ */
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+/* ── Countdown ── */
+function startCountdown() {
+  showScreen('screen-countdown');
+  let n = 3;
+  const el = document.getElementById('cd-num');
+  el.textContent = n;
+  const iv = setInterval(() => {
+    n--;
+    if (n <= 0) { clearInterval(iv); initGame(); return; }
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = 'pop .4s ease';
+    el.textContent = n;
+  }, 1000);
+}
 
-    /* ============================================================
-       COUNTDOWN → GAME START
-    ============================================================ */
-    function startCountdown() {
-      showScreen('screen-countdown');
-      const display = document.getElementById('countdown-display');
-      let count = 3;
+/* ── Init game ── */
+function initGame() {
+  const para = PARAGRAPHS[Math.floor(Math.random() * PARAGRAPHS.length)];
+  state.words = para.split(' ');
+  state.idx = 0; state.correct = 0;
+  state.timeLeft = 60; state.active = true;
+  renderWords();
+  setCounter(0);
+  setTimer(60);
+  setProgress(0, state.words.length);
+  const inp = document.getElementById('game-inp');
+  inp.value = ''; inp.classList.remove('wrong');
+  showScreen('screen-game');
+  inp.focus();
+  state.timer = setInterval(tick, 1000);
+}
 
-      const tick = () => {
-        if (count > 0) {
-          display.className = 'countdown-number';
-          display.textContent = count;
-          // Trigger reflow for animation restart
-          void display.offsetWidth;
-          display.className = 'countdown-number';
-          count--;
-          setTimeout(tick, 900);
-        } else {
-          display.className = 'countdown-go';
-          display.textContent = 'GO!';
-          setTimeout(initGame, 700);
-        }
-      };
+/* ── Timer ── */
+function tick() {
+  state.timeLeft--;
+  setTimer(state.timeLeft);
+  if (state.timeLeft <= 0) endGame();
+}
+function setTimer(s) {
+  const m = String(Math.floor(s / 60)).padStart(2, '0');
+  const ss = String(s % 60).padStart(2, '0');
+  document.getElementById('timer-disp').textContent = m + ':' + ss;
+}
 
-      tick();
-    }
+/* ── Render words ── */
+function renderWords() {
+  const el = document.getElementById('words-disp');
+  el.innerHTML = state.words.map((w, i) => {
+    let c = 'word';
+    if (i < state.idx) c += ' correct';
+    else if (i === state.idx) c += ' current';
+    return `<span class="${c}">${w}</span>`;
+  }).join(' ');
+  const cur = el.querySelector('.current');
+  if (cur) cur.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
 
-    /* ============================================================
-       INIT GAME
-    ============================================================ */
-    function initGame() {
-      // Pick random paragraph
-      const raw = PARAGRAPHS[Math.floor(Math.random() * PARAGRAPHS.length)];
-      state.words = raw.trim().split(/\s+/);
-      state.currentIndex = 0;
-      state.correctCount = 0;
-      state.timeLeft = 60;
-      state.gameActive = true;
+/* ── Input ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('game-inp');
+  inp.addEventListener('keydown', e => {
+    if (!state.active) return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); commitWord(); }
+  });
+  inp.addEventListener('input', () => {
+    if (!state.active) return;
+    const t = inp.value.trim();
+    const target = state.words[state.idx] || '';
+    inp.classList.toggle('wrong', t.length > 0 && !target.startsWith(t));
+  });
+});
 
-      showScreen('screen-game');
+function commitWord() {
+  const inp = document.getElementById('game-inp');
+  const typed = inp.value.trim();
+  if (!typed) return;
+  if (typed === state.words[state.idx]) {
+    state.correct++;
+    setCounter(state.correct);
+  }
+  state.idx++;
+  setProgress(state.idx, state.words.length);
+  if (state.idx >= state.words.length) { endGame(); return; }
+  inp.value = ''; inp.classList.remove('wrong');
+  renderWords();
+}
 
-      // Render words
-      renderWords();
+function setCounter(n) { document.getElementById('cnt-val').textContent = n; }
+function setProgress(done, total) {
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  document.getElementById('prog-text').textContent = done + ' / ' + total + ' words completed';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
 
-      // Reset timer display
-      updateTimerDisplay(60);
-      document.getElementById('timer-bar').style.width = '100%';
-      document.getElementById('timer-bar').style.background = 'linear-gradient(90deg, #fdc602, #ff9f40)';
-      document.getElementById('word-count-num').textContent = '0';
+/* ── End game ── */
+function endGame() {
+  if (!state.active) return;
+  state.active = false;
+  clearInterval(state.timer);
+  state.finalCount = state.correct;
+  state.reward = getReward(state.correct);
+  showResult();
+}
 
-      // Focus input
-      const input = document.getElementById('typing-input');
-      input.value = '';
-      input.disabled = false;
-      input.className = 'typing-input';
-      input.placeholder = 'Bắt đầu gõ từ đầu tiên...';
-      input.focus();
+/* ── Result ── */
+function showResult() {
+  const n = state.finalCount;
+  const r = state.reward;
+  document.getElementById('res-num').textContent = n;
 
-      // Start timer
-      clearInterval(state.timer);
-      state.timer = setInterval(tickTimer, 1000);
-    }
+  const banners = { 0: 'Good Try! 💪', 1: '😊 Great Job!', 2: '⭐ Amazing!', 3: '🏆 Outstanding!' };
+  const bees    = { 0: '🐝', 1: '🐝', 2: '⭐', 3: '🏆' };
+  document.getElementById('res-banner').textContent = banners[r.tier];
+  document.getElementById('res-bee').textContent = bees[r.tier];
 
-    /* ============================================================
-       RENDER WORDS
-    ============================================================ */
-    function renderWords() {
-      const container = document.getElementById('text-display');
-      container.innerHTML = state.words.map((word, i) =>
-        `<span class="word-span" id="w${i}">${word}</span>`
-      ).join(' ');
+  if (r.tier === 0) {
+    document.getElementById('btn-claim').style.display = 'none';
+    document.getElementById('res-tag').style.display = 'none';
+    document.getElementById('res-no-reward').style.display = 'block';
+  } else {
+    document.getElementById('btn-claim').style.display = 'inline-block';
+    document.getElementById('res-no-reward').style.display = 'none';
+    const tag = document.getElementById('res-tag');
+    tag.style.display = 'inline-block';
+    tag.textContent = r.label;
+  }
+  showScreen('screen-result');
+}
 
-      highlightCurrentWord();
-    }
+/* ── Claim ── */
+function showClaim() {
+  const t = state.reward.tier;
+  const box = document.getElementById('claim-prize');
+  if (t === 1) {
+    box.innerHTML = `
+      <div class="cp-title">VOUCHER</div>
+      <div class="voucher-big">10%</div>
+      <div class="voucher-detail">Giảm giá tối đa <b>100.000 VNĐ</b></div>
+      <div class="voucher-detail" style="color:#bbb">⏰ Hạn dùng 30 ngày kể từ ngày nhận</div>`;
+  } else if (t === 2) {
+    box.innerHTML = `
+      <div class="cp-title">BỘ STICKER BEELƠ</div>
+      <div class="sticker-grid">
+        <div class="sticker-item"><span class="si">🐝</span>Sticker ong Beelo</div>
+        <div class="sticker-item"><span class="si">🌈</span>Sticker cầu vồng</div>
+        <div class="sticker-item"><span class="si">✏️</span>Sticker sáng tạo</div>
+        <div class="sticker-item"><span class="si">📚</span>Sticker học tập</div>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <div class="kit-emoji">🎨🐝🖍️</div>
+      <div class="cp-title">MINI BUZZ</div>
+      <div class="kit-name">Beelơ Beeswax Crayons<br>Starter Kit</div>
+      <div class="voucher-detail">Bộ sản phẩm đặc biệt dành cho bé yêu! 🌟</div>`;
+  }
+  showScreen('screen-claim');
+}
 
-    function highlightCurrentWord() {
-      // Clear all highlights first
-      document.querySelectorAll('.word-span').forEach((el, i) => {
-        if (!el.classList.contains('correct') && !el.classList.contains('wrong')) {
-          el.classList.remove('current');
-        }
-      });
+/* ── Submit ── */
+function submitClaim(e) {
+  e.preventDefault();
+  showScreen('screen-thankyou');
+}
 
-      const curr = document.getElementById(`w${state.currentIndex}`);
-      if (curr && !curr.classList.contains('correct') && !curr.classList.contains('wrong')) {
-        curr.classList.add('current');
-        // Scroll into view if needed
-        curr.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }
-    }
-
-    /* ============================================================
-       TIMER
-    ============================================================ */
-    function tickTimer() {
-      state.timeLeft--;
-      updateTimerDisplay(state.timeLeft);
-
-      // Update bar
-      const pct = (state.timeLeft / 60) * 100;
-      const bar = document.getElementById('timer-bar');
-      bar.style.width = pct + '%';
-
-      if (state.timeLeft <= 10) {
-        bar.style.background = 'linear-gradient(90deg, #e05555, #ff6b6b)';
-        document.getElementById('timer-display').classList.add('urgent');
-      }
-
-      if (state.timeLeft <= 0) {
-        endGame();
-      }
-    }
-
-    function updateTimerDisplay(seconds) {
-      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-      const s = (seconds % 60).toString().padStart(2, '0');
-      document.getElementById('timer-display').textContent = `${m}:${s}`;
-    }
-
-    /* ============================================================
-       INPUT HANDLING
-    ============================================================ */
-    function handleInput(e) {
-      if (!state.gameActive) return;
-
-      const typed = e.target.value;
-      const expected = state.words[state.currentIndex] || '';
-      const input = e.target;
-
-      // Check if typed includes a space → commit word
-      if (typed.includes(' ') || typed.endsWith(' ')) {
-        const word = typed.trim();
-        commitWord(word, expected);
-        input.value = '';
-        input.className = 'typing-input';
-        return;
-      }
-
-      // Live color feedback
-      if (typed === '') {
-        input.className = 'typing-input';
-        const curr = document.getElementById(`w${state.currentIndex}`);
-        if (curr) curr.className = 'word-span current';
-        return;
-      }
-
-      const isMatch = expected.startsWith(typed);
-      input.className = 'typing-input' + (isMatch ? '' : ' input-wrong');
-
-      // Color the current word span
-      const curr = document.getElementById(`w${state.currentIndex}`);
-      if (curr) {
-        curr.className = 'word-span current ' + (isMatch ? '' : 'wrong-typing');
-      }
-    }
-
-    function handleKeydown(e) {
-      if (!state.gameActive) return;
-
-      // Allow space to commit
-      if (e.key === ' ') {
-        e.preventDefault();
-        const input = e.target;
-        const typed = input.value.trim();
-        if (typed === '') return; // ignore empty
-        const expected = state.words[state.currentIndex] || '';
-        commitWord(typed, expected);
-        input.value = '';
-        input.className = 'typing-input';
-      }
-    }
-
-    function commitWord(typed, expected) {
-      const span = document.getElementById(`w${state.currentIndex}`);
-
-      if (typed === expected) {
-        state.correctCount++;
-        if (span) span.className = 'word-span correct';
-        document.getElementById('word-count-num').textContent = state.correctCount;
-      } else {
-        if (span) span.className = 'word-span wrong';
-      }
-
-      state.currentIndex++;
-
-      // Finished all words
-      if (state.currentIndex >= state.words.length) {
-        endGame();
-        return;
-      }
-
-      highlightCurrentWord();
-    }
-
-    /* ============================================================
-       END GAME
-    ============================================================ */
-    function endGame() {
-      clearInterval(state.timer);
-      state.gameActive = false;
-
-      // Disable input
-      const input = document.getElementById('typing-input');
-      input.disabled = true;
-      input.placeholder = 'Hết giờ!';
-
-      // Brief delay before showing result
-      setTimeout(showResult, 600);
-    }
-
-    function getRewardTier(score) {
-      if (score >= 90) return REWARDS.level3;
-      if (score >= 60) return REWARDS.level2;
-      if (score >= 30) return REWARDS.level1;
-      return REWARDS.none;
-    }
-
-    function showResult() {
-      const score = state.correctCount;
-      const reward = getRewardTier(score);
-      state.finalReward = reward;
-
-      // Badge
-      const badge = document.getElementById('result-badge');
-      badge.className = `result-badge ${reward.badgeClass}`;
-      badge.textContent = reward.emoji;
-
-      // Headline
-      document.getElementById('result-headline').textContent = reward.headline;
-
-      // Score
-      document.getElementById('result-score').textContent = score;
-
-      // Reward box
-      const box = document.getElementById('reward-box');
-      if (reward.level !== 'none') {
-        document.getElementById('reward-level-name').textContent = reward.levelName;
-        document.getElementById('reward-desc').textContent = reward.desc;
-        const ul = document.getElementById('reward-items');
-        ul.innerHTML = reward.items.map(item => `<li>${item}</li>`).join('');
-        box.style.display = 'block';
-      } else {
-        box.style.display = 'none';
-        // Add encouraging message
-        document.getElementById('result-headline').textContent =
-          `Cố lên! Bạn gõ được ${score} từ 💪`;
-      }
-
-      // Claim button
-      const claimBtn = document.getElementById('btn-claim');
-      claimBtn.style.display = reward.showClaim ? 'inline-flex' : 'none';
-
-      // Populate claim screen
-      if (reward.showClaim) {
-        document.getElementById('claim-reward-name').textContent = reward.levelName;
-        document.getElementById('reward-reminder').innerHTML =
-          `🎁 Phần thưởng của bạn: <strong>${reward.levelName}</strong><br>
-           📊 Số từ gõ đúng: <strong style="color:var(--green)">${score} từ</strong>`;
-      }
-
-      showScreen('screen-result');
-    }
-
-    /* ============================================================
-       CLAIM FORM SUBMIT
-    ============================================================ */
-    function submitClaim(e) {
-      e.preventDefault();
-
-      const name  = document.getElementById('field-name').value.trim();
-      const email = document.getElementById('field-email').value.trim();
-      const phone = document.getElementById('field-phone').value.trim();
-
-      if (!name || !email || !phone) {
-        alert('Vui lòng điền đầy đủ Họ tên, Email và Số điện thoại nhé! 😊');
-        return;
-      }
-
-      // Populate thank-you screen
-      document.getElementById('thanks-words').textContent = `${state.correctCount} từ`;
-      document.getElementById('thanks-level').textContent = state.finalReward?.levelName || '';
-
-      showScreen('screen-thanks');
-    }
-
-    /* ============================================================
-       RESTART
-    ============================================================ */
-    function restartGame() {
-      // Reset form
-      document.getElementById('claim-form').reset();
-      // Clear any typing state
-      clearInterval(state.timer);
-      state.gameActive = false;
-      startCountdown();
-    }
-  </script>
+/* ── Reset ── */
+function resetGame() {
+  ['f-name','f-email','f-phone','f-note'].forEach(id => { document.getElementById(id).value = ''; });
+  showScreen('screen-intro');
+}
+</script>
 </body>
 </html>
