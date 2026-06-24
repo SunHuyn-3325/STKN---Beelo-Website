@@ -1,852 +1,1163 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BeeLo Typing Challenge</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beelo Typing Challenge ⌨🐝</title>
+  <link rel="shortcut icon" href="cdn/shop/files/bee-icon_32x32a461.png" type="image/png">
+  <!-- Font: Quicksand từ file local (đúng path, không phụ thuộc internet) -->
+  <style>
+    @font-face {
+      font-family: 'Quicksand';
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+      src: url('cdn/fonts/quicksand/quicksand_n4.bf8322a9d1da765aa396ad7b6eeb81930a6214de.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+      src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      src: url('cdn/fonts/quicksand/quicksand_n4.bf8322a9d1da765aa396ad7b6eeb81930a6214de.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+      src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Quicksand';
+      font-weight: 800;
+      font-style: normal;
+      font-display: swap;
+      src: url('cdn/fonts/quicksand/quicksand_n5.8f86b119923a62b5ca76bc9a6fb25da7a7498802.woff2') format('woff2');
+    }
+  </style>
 
-html,body{
-  width:100%;height:100%;
-  overflow:hidden;
-  background:#f0e5cc;
-  display:flex;align-items:center;justify-content:center;
-}
+  <style>
+    /* ============================================================
+       RESET & ROOT
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Stage 3:2 — matches PNG size 1536x1024 */
-#stage{
-  position:relative;
-  width:min(100vw, calc(100vh * 1.5));
-  height:min(100vh, calc(100vw / 1.5));
-  overflow:hidden;
-  flex-shrink:0;
-}
+    :root {
+      --yellow:   #fdc602;
+      --yellow-dk:#b38b00;
+      --brown:    #5b2600;
+      --brown-lt: #8b4a1a;
+      --cream:    #f5eddd;
+      --cream-dk: #ecdfc6;
+      --green:    #4caf7d;
+      --green-lt: #d4f0e2;
+      --red:      #e05555;
+      --red-lt:   #fde8e8;
+      --blue:     #2693cf;
+      --blue-lt:  #d0eaf8;
+      --purple:   #9b59b6;
+      --pink:     #f48fb1;
+      --font:     'Quicksand', 'Nunito', 'Varela Round', 'Comic Sans MS', sans-serif;
+      --radius:   18px;
+      --shadow:   0 4px 20px rgba(91,38,0,0.13);
+    }
 
-.screen{
-  position:absolute;inset:0;
-  display:none;
-  background-size:100% 100%;
-  background-repeat:no-repeat;
-}
-.screen.active{display:block}
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      background: var(--cream);
+      color: var(--brown);
+      overflow-x: hidden;
+    }
 
+    /* ============================================================
+       DECORATIVE BACKGROUND ELEMENTS
+    ============================================================ */
+    .bg-deco {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bg-deco img {
+      position: absolute;
+      opacity: 0.18;
+      max-width: 260px;
+    }
+    .bg-deco .deco-tl { top: -40px; left: -40px; width: 300px; transform: rotate(-15deg); }
+    .bg-deco .deco-tr { top: -30px; right: -40px; width: 260px; transform: rotate(10deg); }
+    .bg-deco .deco-bl { bottom: -30px; left: -20px; width: 200px; transform: rotate(15deg); }
+    .bg-deco .deco-br { bottom: -40px; right: -20px; width: 220px; }
 
-/* ══════════════════════════════
-   SCREEN 1 — MAIN
-   ══════════════════════════════ */
-#s-main{
-  background-image:url('../cdn.shopify.com/s/game_img/Main%20screen.png');
-}
-.btn-start{
-  position:absolute;
-  left:50%;bottom:10%;
-  transform:translateX(-50%);
-  background:linear-gradient(135deg,#FF8C00,#FFC107);
-  color:#fff;border:none;border-radius:60px;
-  padding:.8% 8%;
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(1rem,2.5vw,1.7rem);
-  letter-spacing:1px;cursor:pointer;white-space:nowrap;
-  box-shadow:0 6px 24px rgba(255,152,0,.55),inset 0 1px 0 rgba(255,255,255,.35);
-  transition:transform .18s,box-shadow .18s;
-}
-.btn-start:hover{
-  transform:translateX(-50%) translateY(-3px);
-  box-shadow:0 14px 36px rgba(255,152,0,.65);
-}
+    /* ============================================================
+       SCREEN SYSTEM
+    ============================================================ */
+    .screen {
+      display: none;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 24px 16px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .screen.active { display: flex; }
 
+    /* ============================================================
+       SHARED COMPONENTS
+    ============================================================ */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 780px;
+    }
 
-/* ══════════════════════════════
-   COUNTDOWN OVERLAY
-   ══════════════════════════════ */
-.countdown-overlay{
-  position:absolute;inset:0;
-  background:rgba(0,0,0,.42);
-  display:none;align-items:center;justify-content:center;
-  z-index:50;
-}
-.countdown-overlay.active{display:flex}
-.countdown-number{
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(5rem,18vw,14rem);
-  color:#fff;
-  text-shadow:0 6px 30px rgba(0,0,0,.4),0 0 60px rgba(255,200,0,.6);
-  animation:popIn .55s cubic-bezier(.3,1.6,.5,1) forwards;
-  line-height:1;
-}
-.countdown-number.go{color:#FFD54A;font-size:clamp(3rem,12vw,9rem)}
-@keyframes popIn{
-  0%  {transform:scale(.2);opacity:0}
-  60% {transform:scale(1.15);opacity:1}
-  100%{transform:scale(1);opacity:1}
-}
+    .bee-badge {
+      display: inline-block;
+      font-size: 3rem;
+      line-height: 1;
+      animation: float 3s ease-in-out infinite;
+    }
 
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
 
-/* ══════════════════════════════
-   SCREEN 2 — GAME
-   ══════════════════════════════ */
-#s-game{
-  background-image:url('../cdn.shopify.com/s/game_img/Game.png');
-}
+    .game-title {
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      font-weight: 800;
+      color: var(--brown);
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+    }
 
-.timer-wrap{
-  position:absolute;
-  left:50%;top:2.5%;
-  transform:translateX(-50%);
-  background:#fff8e1;border:2.5px solid #FFD54A;border-radius:60px;
-  padding:.5% 3%;
-  display:flex;align-items:center;gap:.4em;
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.95rem,2.3vw,1.65rem);
-  color:#5B4528;
-  box-shadow:0 4px 14px rgba(255,213,74,.4);
-  white-space:nowrap;z-index:5;
-}
-.timer-wrap.urgent{
-  background:#ffe0e0;border-color:#f44336;color:#c62828;
-  animation:timerShake .4s ease-in-out;
-}
-@keyframes timerShake{
-  0%,100%{transform:translateX(-50%)}
-  25%{transform:translateX(calc(-50% - 5px))}
-  75%{transform:translateX(calc(-50% + 5px))}
-}
+    .subtitle {
+      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+      color: var(--brown-lt);
+      line-height: 1.6;
+    }
 
-.progress-bar-wrap{
-  position:absolute;left:21%;top:10.5%;
-  width:58%;height:1%;
-  background:rgba(255,255,255,.5);border-radius:20px;overflow:hidden;z-index:4;
-}
-.progress-bar-fill{
-  height:100%;
-  background:linear-gradient(90deg,#9CCC65,#FFC107,#FF8A65);
-  border-radius:20px;width:100%;
-  transition:width 1s linear;
-}
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 50px;
+      font-family: var(--font);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+      letter-spacing: 0.05em;
+    }
+    .btn:active { transform: scale(0.96); }
 
-/* Passage card — inside clear area of Game.png */
-.passage-card{
-  position:absolute;
-  left:21%;top:12%;width:57%;height:64%;
-  background:rgba(255,255,255,.93);
-  border:2.5px solid #FFE082;border-radius:20px;
-  padding:2.5% 3%;overflow-y:auto;
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.72rem,1.3vw,1rem);
-  line-height:2.1;color:#5B4528;word-break:break-word;
-  box-shadow:0 8px 32px rgba(255,180,0,.2);
-}
-.passage-card::-webkit-scrollbar{width:5px}
-.passage-card::-webkit-scrollbar-thumb{background:#FFD54A80;border-radius:4px}
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--brown);
+      box-shadow: 0 4px 0 var(--yellow-dk), 0 6px 18px rgba(253,198,2,0.4);
+    }
+    .btn-primary:hover {
+      background: #ffe040;
+      box-shadow: 0 2px 0 var(--yellow-dk), 0 4px 12px rgba(253,198,2,0.4);
+      transform: translateY(-2px);
+    }
 
-/* ── Word states ── */
-.word{display:inline}
+    .btn-outline {
+      background: transparent;
+      color: var(--brown);
+      border: 2.5px solid var(--brown);
+      box-shadow: none;
+    }
+    .btn-outline:hover {
+      background: var(--cream);
+      transform: translateY(-2px);
+    }
 
-.word.correct{
-  background:linear-gradient(90deg,#FF8A65,#FFD54A,#9CCC65,#64B5F6,#BA68C8);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;font-weight:900;
-}
-/* Bounce pop when a word is just accepted */
-.word.just-accepted{
-  background:linear-gradient(90deg,#FF8A65,#FFD54A,#9CCC65,#64B5F6,#BA68C8);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;font-weight:900;
-  animation:acceptPop .4s cubic-bezier(.3,1.6,.5,1);
-}
-@keyframes acceptPop{
-  0%  {transform:scale(1)}
-  50% {transform:scale(1.3)}
-  100%{transform:scale(1)}
-}
+    .btn-green {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 4px 0 #2e7d52, 0 6px 18px rgba(76,175,125,0.35);
+    }
+    .btn-green:hover {
+      background: #5bc48e;
+      transform: translateY(-2px);
+    }
 
-.word.current{
-  background:#FFF176;color:#5B4528;
-  -webkit-text-fill-color:#5B4528;
-  border-radius:6px;padding:1px 5px;font-weight:800;
-  outline:2px dashed #FFB300;
-  animation:pulse 1.2s ease-in-out infinite;
-}
-.word.wrong{
-  color:#fff;-webkit-text-fill-color:#fff;
-  background:#EF5350;border-radius:6px;padding:1px 5px;font-weight:800;
-}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+    /* ============================================================
+       SCREEN 1 – INTRO
+    ============================================================ */
+    #screen-intro .card {
+      text-align: center;
+    }
 
-/* ── Bottom bar ── */
-.game-bottom{
-  position:absolute;left:21%;bottom:4.5%;
-  width:57%;height:9%;
-  display:flex;gap:2%;align-items:stretch;
-}
-.typing-input{
-  flex:1;
-  background:#fff8e1;border:2.5px solid #FFD54A;border-radius:14px;
-  padding:0 3%;
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.85rem,1.5vw,1.1rem);
-  color:#5B4528;font-weight:700;outline:none;
-  caret-color:#FF9800;
-  transition:border-color .15s,box-shadow .15s,background .15s;
-}
-.typing-input:focus{border-color:#FF9800;box-shadow:0 3px 12px rgba(255,152,0,.25)}
-.typing-input.error{
-  border-color:#EF5350 !important;
-  background:#FFEBEE !important;
-  box-shadow:0 0 0 3px rgba(239,83,80,.2) !important;
-}
-.typing-input::placeholder{color:#c8b898;font-weight:400}
+    .intro-icons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .intro-icons img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      animation: float 3s ease-in-out infinite;
+    }
+    .intro-icons img:nth-child(2) { animation-delay: 0.5s; }
+    .intro-icons img:nth-child(3) { animation-delay: 1s; }
+    .intro-icons img:nth-child(4) { animation-delay: 1.5s; }
 
-.counter-box{
-  width:15%;
-  background:linear-gradient(135deg,#FF9800,#FFC107);
-  border-radius:14px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  box-shadow:0 4px 14px rgba(255,152,0,.35);flex-shrink:0;
-}
-.counter-num{
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(1.1rem,2.8vw,2.1rem);
-  color:#fff;line-height:1;
-}
-.counter-lbl{
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.42rem,.75vw,.58rem);
-  color:rgba(255,255,255,.92);font-weight:800;
-  letter-spacing:.5px;text-transform:uppercase;
-}
+    .keyboard-title {
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      letter-spacing: 0.25em;
+      color: var(--yellow-dk);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
 
-/* Error toast */
-.error-toast{
-  position:absolute;left:21%;bottom:15%;width:57%;
-  background:#FFEBEE;border:2px solid #EF5350;border-radius:10px;
-  padding:.5% 2%;
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.62rem,1.1vw,.82rem);
-  color:#c62828;font-weight:700;
-  display:none;align-items:center;gap:.5em;z-index:6;
-}
-.error-toast.show{display:flex;animation:toastIn .2s ease}
-@keyframes toastIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .reward-preview {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+    .reward-chip {
+      background: var(--cream);
+      border: 2px solid var(--cream-dk);
+      border-radius: 50px;
+      padding: 8px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--brown-lt);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-.btn-close-hotspot{
-  position:absolute;right:5%;top:2%;
-  width:5%;height:8%;
-  background:transparent;border:none;cursor:pointer;border-radius:50%;z-index:8;
-}
+    /* ============================================================
+       SCREEN 2 – COUNTDOWN
+    ============================================================ */
+    #screen-countdown {
+      text-align: center;
+    }
 
+    .countdown-number {
+      font-size: clamp(6rem, 25vw, 12rem);
+      font-weight: 900;
+      color: var(--yellow);
+      text-shadow: 0 6px 0 var(--yellow-dk), 0 12px 30px rgba(253,198,2,0.3);
+      line-height: 1;
+      animation: popIn 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+      display: inline-block;
+    }
+    .countdown-go {
+      font-size: clamp(4rem, 18vw, 9rem);
+      font-weight: 900;
+      color: var(--green);
+      text-shadow: 0 6px 0 #2e7d52;
+      animation: popIn 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+      display: inline-block;
+    }
 
-/* ══════════════════════════════
-   SCREEN 3 — RESULT
-   PNG layout:
-     "Bạn đã gõ được:" label  ~42–49 %
-     White rounded box         ~50–73 %
-     Button area               ~76–88 %
-   ══════════════════════════════ */
-#s-result{
-  background-image:url('../cdn.shopify.com/s/game_img/Result.png');
-}
+    @keyframes popIn {
+      0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+      60%  { transform: scale(1.15) rotate(3deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
 
-/* Score — tight stack inside white box */
-.result-score-wrap{
-  position:absolute;
-  left:17%;top:52%;
-  width:66%;height:19%;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  gap:2%;
-}
-.result-score-num{
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(2.2rem,5vw,4.2rem);
-  background:linear-gradient(135deg,#FF7043,#FFA726,#66BB6A);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;line-height:1.05;
-}
-.result-score-sub{
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.7rem,1.1vw,.9rem);
-  font-weight:800;color:#7B5230;
-}
+    /* ============================================================
+       SCREEN 3 – GAME
+    ============================================================ */
+    #screen-game .card {
+      max-width: 860px;
+    }
 
-/* Button row — centred, auto-width */
-.result-btn-row{
-  position:absolute;
-  left:17%;top:76%;
-  width:66%;height:13%;
-  display:flex;align-items:center;justify-content:center;
-}
-.btn-claim,.btn-next{
-  height:78%;
-  padding:0 clamp(24px,5.5vw,66px);
-  border:none;border-radius:60px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:.5em;
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(1rem,2.1vw,1.55rem);
-  color:#fff;white-space:nowrap;letter-spacing:.5px;
-  transition:transform .18s,box-shadow .18s;
-}
-.btn-claim{
-  background:linear-gradient(135deg,#FF9800,#FFC107);
-  box-shadow:0 6px 20px rgba(255,152,0,.5);
-}
-.btn-claim:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,152,0,.65)}
-.btn-claim.hidden{display:none}
+    .game-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-.btn-next{
-  background:linear-gradient(135deg,#42A5F5,#1565C0);
-  box-shadow:0 6px 20px rgba(33,150,243,.45);
-  display:none;
-}
-.btn-next.visible{display:flex}
-.btn-next:hover{transform:translateY(-2px)}
+    .timer-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .timer-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--brown-lt);
+      font-weight: 700;
+    }
+    .timer-display {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--brown);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      transition: color 0.3s;
+    }
+    .timer-display.urgent { color: var(--red); animation: pulse 0.5s infinite; }
 
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.06); }
+    }
 
-/* ══════════════════════════════
-   SCREEN 4 — GIFT
-   Form fields laid over the PNG's existing white card area (right panel)
-   PNG has title/header baked in — we only place inputs + button
-   ══════════════════════════════ */
-#s-gift{background-image:url('../cdn.shopify.com/s/game_img/Gift%201.png')}
+    .word-count-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .word-count-num {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1;
+    }
+    .word-count-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--brown-lt);
+      font-weight: 700;
+    }
 
-/* Transparent container sitting inside PNG's right white card */
-.gift-form-panel{
-  position:absolute;
-  left:55%;top:36%;
-  width:38%;height:58%;
-  background:transparent;
-  display:flex;flex-direction:column;
-  gap:3.5%;
-}
+    /* Timer bar */
+    .timer-bar-outer {
+      height: 10px;
+      background: var(--cream-dk);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .timer-bar-inner {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--yellow), #ff9f40);
+      transition: width 1s linear, background 0.5s;
+    }
 
-.form-group{display:flex;flex-direction:column;gap:5%}
-.form-label{
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.55rem,.9vw,.75rem);
-  font-weight:800;color:#4A3420;
-}
-/* Input row with emoji icon */
-.form-input-wrap{
-  position:relative;display:flex;align-items:center;
-}
-.form-input-icon{
-  position:absolute;left:clamp(7px,1vw,12px);
-  font-size:clamp(.65rem,1vw,.82rem);
-  pointer-events:none;line-height:1;
-}
-.form-input{
-  width:100%;
-  background:#FAF7F2;
-  border:1.5px solid #E2D0B8;border-radius:10px;
-  padding:clamp(5px,.9vh,10px) clamp(8px,1.2vw,14px) clamp(5px,.9vh,10px) clamp(26px,3.2vw,38px);
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.55rem,.9vw,.75rem);
-  color:#5B4528;outline:none;
-  transition:border-color .18s,box-shadow .18s;
-  box-sizing:border-box;
-}
-.form-input:focus{
-  border-color:#FFB300;background:#fff;
-  box-shadow:0 2px 8px rgba(255,179,0,.18);
-}
-.form-input::placeholder{color:#C4A882;font-weight:400}
-textarea.form-input{resize:none;height:clamp(38px,5.5vh,62px)}
+    /* Text display */
+    .text-display-wrapper {
+      background: var(--cream);
+      border: 2.5px solid var(--cream-dk);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      font-size: clamp(1rem, 2.5vw, 1.18rem);
+      line-height: 1.9;
+      word-break: break-word;
+      min-height: 110px;
+      user-select: none;
+    }
 
-.btn-hoan-tat{
-  background:linear-gradient(90deg,#F5A623,#F0821A);
-  color:#fff;border:none;border-radius:60px;
-  padding:clamp(8px,1.4vh,14px) 0;width:100%;
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.85rem,1.6vw,1.25rem);
-  letter-spacing:1px;cursor:pointer;
-  box-shadow:0 5px 18px rgba(240,130,26,.45);
-  transition:transform .18s,box-shadow .18s;
-  display:flex;align-items:center;justify-content:center;gap:.4em;
-  margin-top:auto;
-}
-.btn-hoan-tat:hover{transform:translateY(-2px);box-shadow:0 9px 26px rgba(240,130,26,.55)}
+    .word-span {
+      display: inline;
+      padding: 1px 2px;
+      border-radius: 4px;
+      transition: background 0.15s, color 0.15s;
+      white-space: pre-wrap;
+    }
+    .word-span.correct  { color: var(--green); font-weight: 700; }
+    .word-span.wrong    { color: var(--red); text-decoration: underline wavy var(--red); }
+    .word-span.current  { background: var(--yellow); color: var(--brown); font-weight: 700; border-radius: 6px; }
 
+    /* Input field */
+    .typing-input {
+      width: 100%;
+      padding: 14px 20px;
+      font-family: var(--font);
+      font-size: 1.2rem;
+      font-weight: 600;
+      border: 3px solid var(--cream-dk);
+      border-radius: var(--radius);
+      background: white;
+      color: var(--brown);
+      outline: none;
+      margin-top: 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .typing-input:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 4px rgba(253,198,2,0.2);
+    }
+    .typing-input.input-wrong {
+      border-color: var(--red);
+      box-shadow: 0 0 0 4px rgba(224,85,85,0.15);
+    }
+    .typing-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
-/* ══════════════════════════════
-   SCREEN 5 — FINISH
-   ══════════════════════════════ */
-#s-finish{background-image:url('../cdn.shopify.com/s/game_img/Finish.png')}
+    .game-hint {
+      font-size: 0.8rem;
+      color: var(--brown-lt);
+      margin-top: 8px;
+      text-align: center;
+    }
 
-.finish-buttons{
-  position:absolute;left:50%;bottom:6%;
-  transform:translateX(-50%);
-  display:flex;gap:2.5vw;align-items:center;
-}
-.btn-play-again,.btn-home-btn{
-  border:none;border-radius:60px;
-  padding:clamp(12px,2.2vw,22px) clamp(28px,5vw,70px);
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(1rem,2vw,1.5rem);
-  letter-spacing:.5px;cursor:pointer;white-space:nowrap;
-  transition:transform .18s,box-shadow .18s;
-  display:flex;align-items:center;gap:.4em;
-}
-.btn-play-again{
-  background:linear-gradient(135deg,#FF9800,#FFC107);color:#fff;
-  box-shadow:0 6px 20px rgba(255,152,0,.45);
-}
-.btn-play-again:hover{transform:translateY(-3px)}
-.btn-home-btn{
-  background:linear-gradient(135deg,#42A5F5,#1565C0);color:#fff;
-  box-shadow:0 6px 20px rgba(33,150,243,.4);
-}
-.btn-home-btn:hover{transform:translateY(-3px)}
-</style>
+    /* ============================================================
+       SCREEN 4 – RESULT
+    ============================================================ */
+    #screen-result .card { text-align: center; }
+
+    .result-badge {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      margin: 0 auto 20px;
+      box-shadow: var(--shadow);
+      animation: popIn 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+    }
+    .badge-none    { background: var(--cream); }
+    .badge-level1  { background: linear-gradient(135deg, #fff3cd, var(--yellow)); }
+    .badge-level2  { background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
+    .badge-level3  { background: linear-gradient(135deg, #e3f2fd, #90caf9); }
+
+    .score-big {
+      font-size: clamp(3rem, 10vw, 5rem);
+      font-weight: 900;
+      color: var(--brown);
+      line-height: 1;
+    }
+    .score-label { font-size: 1rem; color: var(--brown-lt); margin-top: 4px; font-weight: 600; }
+
+    .reward-box {
+      background: var(--cream);
+      border: 2.5px dashed var(--yellow);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    .reward-level-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--brown);
+      margin-bottom: 6px;
+    }
+    .reward-desc {
+      font-size: 0.95rem;
+      color: var(--brown-lt);
+      line-height: 1.5;
+    }
+    .reward-items {
+      list-style: none;
+      margin-top: 8px;
+    }
+    .reward-items li::before { content: '✦ '; color: var(--yellow-dk); font-weight: 700; }
+
+    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+
+    /* ============================================================
+       SCREEN 5 – CLAIM FORM
+    ============================================================ */
+    #screen-claim .card { max-width: 560px; }
+
+    .form-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+    .form-subtitle { font-size: 0.9rem; color: var(--brown-lt); margin-bottom: 24px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brown-lt);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 13px 16px;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 600;
+      border: 2.5px solid var(--cream-dk);
+      border-radius: var(--radius);
+      background: white;
+      color: var(--brown);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 4px rgba(253,198,2,0.2);
+    }
+    .form-textarea { resize: vertical; min-height: 80px; }
+
+    .reward-reminder {
+      background: var(--cream);
+      border-left: 4px solid var(--yellow);
+      border-radius: 0 12px 12px 0;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--brown);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       SCREEN 6 – THANK YOU
+    ============================================================ */
+    #screen-thanks .card { text-align: center; }
+
+    .thanks-bee {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 16px;
+      animation: float 2.5s ease-in-out infinite;
+    }
+
+    .confetti-burst {
+      font-size: 2rem;
+      letter-spacing: 0.2em;
+      margin: 12px 0;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 600px) {
+      .card { padding: 24px 18px; }
+      .game-header { justify-content: center; }
+      .text-display-wrapper { font-size: 0.95rem; padding: 14px 16px; }
+      .typing-input { font-size: 1.05rem; }
+    }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .screen.active .card { animation: slideUp 0.4s ease; }
+    .screen.active > *:not(.card) { animation: slideUp 0.4s ease; }
+  </style>
 </head>
 <body>
 
-<div id="stage">
-
-<!-- ════ SCREEN 1 — MAIN ════ -->
-<div id="s-main" class="screen active">
-  <button class="btn-start" onclick="beginCountdown()">Start game &nbsp;&rsaquo;</button>
-</div>
-
-
-<!-- ════ SCREEN 2 — GAME ════ -->
-<div id="s-game" class="screen">
-
-  <div class="countdown-overlay" id="countdown-overlay">
-    <div class="countdown-number" id="countdown-num">3</div>
+  <!-- Decorative background -->
+  <div class="bg-deco">
+    <img class="deco-tl" src="cdn/shop/files/rainbow-icon-v23ef3.png" alt="">
+    <img class="deco-tr" src="cdn/shop/files/earth-icon-v2cb2a.png" alt="">
+    <img class="deco-bl" src="cdn/shop/files/crayons-icon-v2a2b4.png" alt="">
+    <img class="deco-br" src="cdn/shop/files/bee-icon5a7f.png" alt="">
   </div>
 
-  <div class="timer-wrap" id="timer-wrap">
-    &#9200;&nbsp;<span id="timer-display">01:00</span>
-  </div>
+  <!-- ============================================================
+       SCREEN 1 – INTRO
+  ============================================================ -->
+  <div id="screen-intro" class="screen active">
+    <div class="card">
+      <div class="intro-icons">
+        <img src="cdn/shop/files/bee-icon5a7f.png" alt="Bee">
+        <img src="cdn/shop/files/rainbow-icon-v23ef3.png" alt="Rainbow">
+        <img src="cdn/shop/files/crayons-icon-v2a2b4.png" alt="Crayons">
+        <img src="cdn/shop/files/earth-icon-v2cb2a.png" alt="Earth">
+      </div>
 
-  <div class="progress-bar-wrap">
-    <div class="progress-bar-fill" id="progress-fill"></div>
-  </div>
+      <p class="keyboard-title">⌨ Beelo Typing Challenge</p>
+      <h1 class="game-title" style="margin-bottom: 16px;">
+        "Little Fingers,<br>Big Creativity!"
+      </h1>
+      <p class="subtitle" style="margin-bottom: 28px;">
+        Bạn đã sẵn sàng trở thành <strong>Nhà Đánh Máy Nhí</strong> chưa?<br>
+        Hãy gõ thật nhanh và chính xác trong <strong>60 giây</strong> để nhận những phần quà hấp dẫn từ Beelo! 🐝
+      </p>
 
-  <div class="passage-card" id="reading-area"></div>
+      <div style="display:flex; justify-content:center; margin-bottom:28px;">
+        <button class="btn btn-primary" onclick="startCountdown()" style="font-size:1.25rem; padding:16px 48px;">
+          🚀 START GAME
+        </button>
+      </div>
 
-  <div class="error-toast" id="error-toast">
-    &#10060;&nbsp;Sai rồi! Đánh lại từ đó nha.
-  </div>
-
-  <div class="game-bottom">
-    <input
-      type="text" id="game-input" class="typing-input"
-      placeholder="Gõ từng chữ, nhấn Space để tiếp tục..."
-      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-    >
-    <div class="counter-box">
-      <div class="counter-num" id="counter-value">0</div>
-      <div class="counter-lbl">Correct</div>
-    </div>
-  </div>
-
-  <button class="btn-close-hotspot" onclick="backToMain()" title="Quit"></button>
-</div>
-
-
-<!-- ════ SCREEN 3 — RESULT ════ -->
-<div id="s-result" class="screen">
-  <div class="result-score-wrap">
-    <div class="result-score-num" id="result-number">0</div>
-    <div class="result-score-sub">correct words &nbsp;/&nbsp; 60 seconds</div>
-  </div>
-
-  <div class="result-btn-row">
-    <button class="btn-claim hidden" id="btn-claim" onclick="showGiftScreen()">
-      &#127873;&nbsp; Claim Your Gift &rsaquo;
-    </button>
-    <button class="btn-next" id="btn-next" onclick="show('s-finish')">
-      Next &rsaquo;
-    </button>
-  </div>
-</div>
-
-
-<!-- ════ SCREEN 4 — GIFT ════ -->
-<div id="s-gift" class="screen">
-  <div class="gift-form-panel">
-
-    <div class="form-group">
-      <label class="form-label">Họ và tên</label>
-      <div class="form-input-wrap">
-        <span class="form-input-icon">👤</span>
-        <input type="text" id="form-name" class="form-input" placeholder="Nhập họ và tên của bạn">
+      <div class="reward-preview">
+        <div class="reward-chip">🐝 30–59 từ → Voucher 10%</div>
+        <div class="reward-chip">🌈 60–89 từ → Sticker Set</div>
+        <div class="reward-chip">👑 90+ từ → Starter Kit</div>
       </div>
     </div>
-
-    <div class="form-group">
-      <label class="form-label">Email</label>
-      <div class="form-input-wrap">
-        <span class="form-input-icon">✉️</span>
-        <input type="email" id="form-email" class="form-input" placeholder="Nhập email của bạn">
-      </div>
+    <div style="margin-top:20px;">
+      <a href="index.html" class="btn btn-outline" style="font-size:0.9rem; padding:10px 24px;">← Về trang chủ</a>
     </div>
-
-    <div class="form-group">
-      <label class="form-label">Số điện thoại</label>
-      <div class="form-input-wrap">
-        <span class="form-input-icon">📞</span>
-        <input type="tel" id="form-phone" class="form-input" placeholder="Nhập số điện thoại của bạn">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Câu hỏi hoặc ghi chú khác</label>
-      <div class="form-input-wrap">
-        <span class="form-input-icon" style="align-self:flex-start;margin-top:clamp(6px,1vh,10px)">💬</span>
-        <textarea id="form-note" class="form-input" placeholder="Nhập câu hỏi hoặc ghi chú của bạn"></textarea>
-      </div>
-    </div>
-
-    <button class="btn-hoan-tat" onclick="submitGift()">HOÀN TẤT &nbsp;&rsaquo;</button>
-
   </div>
-</div>
 
-
-<!-- ════ SCREEN 5 — FINISH ════ -->
-<div id="s-finish" class="screen">
-  <div class="finish-buttons">
-    <button class="btn-play-again" onclick="backToMain()">Play Again</button>
-    <button class="btn-home-btn" onclick="goHome()">Home</button>
+  <!-- ============================================================
+       SCREEN 2 – COUNTDOWN
+  ============================================================ -->
+  <div id="screen-countdown" class="screen">
+    <div id="countdown-display" class="countdown-number">3</div>
+    <p style="font-size:1.2rem; font-weight:700; color:var(--brown-lt); margin-top:16px;">
+      Chuẩn bị gõ thật nhanh nhé! 🐝
+    </p>
   </div>
-</div>
 
-</div><!-- #stage -->
+  <!-- ============================================================
+       SCREEN 3 – GAME
+  ============================================================ -->
+  <div id="screen-game" class="screen">
+    <div class="card">
+      <!-- Header: timer + word count -->
+      <div class="game-header">
+        <div class="timer-block">
+          <span class="timer-label">⏱ Thời gian</span>
+          <span id="timer-display" class="timer-display">01:00</span>
+        </div>
 
+        <div style="text-align:center;">
+          <img src="cdn/shop/files/bee-icon5a7f.png" alt="Beelo" style="width:52px; height:52px; object-fit:contain; animation: float 2.5s ease-in-out infinite;">
+        </div>
 
-<script>
-/* ════════════════════════
-   AUDIO
-   ════════════════════════ */
-const SFX = {
-  bg:    new Audio('../cdn.shopify.com/s/audio/nhạc nền.mp3'),
-  click: new Audio('../cdn.shopify.com/s/audio/click game.mp3'),
-  win:   new Audio('../cdn.shopify.com/s/audio/win_game.mp3'),
-};
-SFX.bg.loop   = true;
-SFX.bg.volume = 0.35;
-SFX.click.volume = 0.7;
-SFX.win.volume   = 0.9;
+        <div class="word-count-block">
+          <span id="word-count-num" class="word-count-num">0</span>
+          <span class="word-count-label">✅ Từ đúng</span>
+        </div>
+      </div>
 
-function playClick(){
-  SFX.click.currentTime = 0;
-  SFX.click.play().catch(()=>{});
-}
-function playBg(){
-  SFX.bg.currentTime = 0;
-  SFX.bg.play().catch(()=>{});
-}
-function stopBg(){
-  SFX.bg.pause();
-  SFX.bg.currentTime = 0;
-}
-function playWin(){
-  stopBg();
-  SFX.win.currentTime = 0;
-  SFX.win.play().catch(()=>{});
-}
+      <!-- Timer bar -->
+      <div class="timer-bar-outer">
+        <div id="timer-bar" class="timer-bar-inner" style="width:100%;"></div>
+      </div>
 
-/* Start bg music on first user interaction (beats autoplay policy) */
-let _bgStarted = false;
-document.addEventListener('click', () => {
-  if (!_bgStarted) { _bgStarted = true; playBg(); }
-}, { once: true });
+      <!-- Paragraph text -->
+      <div id="text-display" class="text-display-wrapper"></div>
 
-/* Attach click sound to every button (delegated) */
-document.addEventListener('click', e => {
-  if (e.target.closest('button, .btn-start')) playClick();
-}, true);
+      <!-- Input -->
+      <input
+        type="text"
+        id="typing-input"
+        class="typing-input"
+        placeholder="Bắt đầu gõ từ đầu tiên..."
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        oninput="handleInput(event)"
+        onkeydown="handleKeydown(event)"
+      >
+      <p class="game-hint">💡 Nhấn <kbd style="background:var(--cream-dk);padding:1px 6px;border-radius:4px;">Space</kbd> sau mỗi từ để chuyển sang từ tiếp theo</p>
+    </div>
+  </div>
 
-/* ── Paragraphs (no punctuation for clean word matching) ── */
-const PARAGRAPHS = [
-  "Every morning Beelo the little bee wakes up early to begin a brand-new day full of adventure and learning Beelo loves flying around the garden visiting colorful flowers and meeting friendly animals along the way As Beelo explores nature he discovers new things about plants trees and the world around him He believes that every day is a wonderful opportunity to learn create and grow Whether it is trying something new helping a friend or practicing an important skill Beelo always gives his best effort He knows that with patience determination and a positive attitude anyone can achieve great things and turn small dreams into amazing accomplishments",
-  "One sunny day Beelo and his rainbow friends set out on a magical journey to collect colors from around the world They traveled across green fields sparkling rivers and beautiful forests filled with singing birds Along the way they faced exciting challenges that taught them about friendship teamwork and courage Whenever they encountered a problem they worked together to find a solution and encouraged one another to keep going As they continued their adventure they gathered bright colors from every place they visited By the end of the journey they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere",
-  "Today is the biggest creative festival of the year and Beelo is excited to welcome children from all over the world The festival is filled with fun activities such as drawing coloring storytelling and creating wonderful art projects Every child brings unique ideas and imagination to share with others Some children draw beautiful forests while others create colorful oceans magical castles or even planets in outer space Beelo encourages everyone to express themselves freely because every idea is valuable and special Throughout the day children learn that creativity grows when they are confident curious and willing to try new things By the end of the festival everyone leaves with happy memories new friends and inspiration to continue exploring their creativity every day"
-];
+  <!-- ============================================================
+       SCREEN 4 – RESULT
+  ============================================================ -->
+  <div id="screen-result" class="screen">
+    <div class="card">
+      <div id="result-badge" class="result-badge badge-level1">🐝</div>
+      <div id="result-headline" style="font-size:1.6rem;font-weight:900;margin-bottom:4px;">🎉 Great Job!</div>
+      <div class="score-big" id="result-score">0</div>
+      <div class="score-label">từ chính xác trong 60 giây</div>
 
-/* ── State ── */
-let state = {
-  words:[], idx:0, correct:0,
-  timeLeft:60, active:false,
-  timer:null, errorTimer:null
-};
+      <div id="reward-box" class="reward-box" style="display:none;">
+        <div id="reward-level-name" class="reward-level-name"></div>
+        <div id="reward-desc" class="reward-desc"></div>
+        <ul id="reward-items" class="reward-items"></ul>
+      </div>
 
-/* ── Screens ── */
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+      <div class="result-actions">
+        <button id="btn-claim" class="btn btn-green" onclick="showScreen('screen-claim')" style="display:none;">
+          🎁 Nhận quà ngay!
+        </button>
+        <button class="btn btn-primary" onclick="restartGame()">🔄 Chơi lại</button>
+        <a href="index.html" class="btn btn-outline">🏠 Về trang chủ</a>
+      </div>
+    </div>
+  </div>
 
-function backToMain(){
-  state.active=false;
-  SFX.win.pause(); SFX.win.currentTime=0;
-  SFX.bg.volume=0.35;
-  clearInterval(state.timer);
-  clearTimeout(state.errorTimer);
-  const inp=document.getElementById('game-input');
-  inp.value=''; inp.classList.remove('error');
-  hideErrorToast();
-  document.getElementById('countdown-overlay').classList.remove('active');
-  show('s-main');
-}
+  <!-- ============================================================
+       SCREEN 5 – CLAIM FORM
+  ============================================================ -->
+  <div id="screen-claim" class="screen">
+    <div class="card">
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="cdn/shop/files/bee-icon5a7f.png" alt="Beelo" style="width:64px;height:64px;object-fit:contain;">
+      </div>
+      <h2 class="form-title">🎁 Nhận quà từ Beelo</h2>
+      <p class="form-subtitle">
+        Vui lòng để lại thông tin để đội ngũ Beelo liên hệ sớm nhất.<br>
+        Phần thưởng: <strong id="claim-reward-name" style="color:var(--brown);"></strong>
+      </p>
 
-function goHome(){ window.location.href='index.html'; }
+      <div id="reward-reminder" class="reward-reminder"></div>
 
+      <form id="claim-form" onsubmit="submitClaim(event)" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="field-name">Họ và tên *</label>
+          <input id="field-name" class="form-input" type="text" placeholder="Nguyễn Văn A" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="field-email">Email *</label>
+          <input id="field-email" class="form-input" type="email" placeholder="example@email.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="field-phone">Số điện thoại *</label>
+          <input id="field-phone" class="form-input" type="tel" placeholder="0901 234 567" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="field-note">Câu hỏi hoặc ghi chú khác</label>
+          <textarea id="field-note" class="form-textarea" placeholder="Nhập ghi chú (nếu có)..."></textarea>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button type="submit" class="btn btn-green" style="width:100%;">
+            🎁 NHẬN QUÀ NGAY
+          </button>
+          <button type="button" class="btn btn-outline" onclick="showScreen('screen-result')" style="width:100%;">
+            ← Quay lại màn hình kết quả
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-/* ════════════════════════
-   COUNTDOWN  3→2→1→GO!
-   ════════════════════════ */
-function beginCountdown(){
-  const para=PARAGRAPHS[Math.floor(Math.random()*PARAGRAPHS.length)];
-  state.words=para.split(/\s+/);
-  state.idx=0; state.correct=0; state.timeLeft=60; state.active=false;
+  <!-- ============================================================
+       SCREEN 6 – THANK YOU
+  ============================================================ -->
+  <div id="screen-thanks" class="screen">
+    <div class="card" style="text-align:center;">
+      <div class="confetti-burst">🎊 🐝 🎊</div>
+      <img class="thanks-bee" src="cdn/shop/files/bee-icon5a7f.png" alt="Beelo">
+      <h2 style="font-size:2rem; font-weight:900; margin-bottom:12px; color:var(--yellow-dk);">
+        💛 CẢM ƠN BẠN!
+      </h2>
+      <p class="subtitle" style="margin-bottom:8px;">
+        Cảm ơn bạn đã tham gia <strong>Beelo Typing Challenge</strong>.
+      </p>
+      <p class="subtitle" style="margin-bottom:8px;">
+        Hy vọng bạn đã có những phút giây vừa học vừa chơi thật vui vẻ.
+      </p>
+      <p class="subtitle" style="margin-bottom:28px;">
+        Hẹn gặp lại bạn trong những hoạt động sáng tạo tiếp theo cùng Beelo!
+      </p>
 
-  renderPassage();
-  document.getElementById('counter-value').textContent='0';
-  updateTimerUI();
-  document.getElementById('progress-fill').style.width='100%';
-  document.getElementById('timer-wrap').classList.remove('urgent');
-  show('s-game');
+      <div id="thanks-score-summary" style="background:var(--cream); border-radius:var(--radius); padding:16px 20px; margin-bottom:24px; display:inline-block;">
+        <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--brown-lt); font-weight:700;">Kết quả của bạn</div>
+        <div id="thanks-words" style="font-size:2rem; font-weight:900; color:var(--green);">0 từ</div>
+        <div id="thanks-level" style="font-size:1rem; font-weight:700; color:var(--brown-lt);"></div>
+      </div>
 
-  const overlay=document.getElementById('countdown-overlay');
-  const numEl  =document.getElementById('countdown-num');
-  overlay.classList.add('active');
+      <p style="font-size:1.1rem; font-weight:800; color:var(--brown); margin-bottom:24px;">
+        🐝 Keep Creating With Beelo!
+      </p>
 
-  const steps=['3','2','1','GO!'];
-  let step=0;
-  function tick(){
-    numEl.className='countdown-number'+(steps[step]==='GO!'?' go':'');
-    numEl.textContent=steps[step];
-    numEl.style.animation='none';
-    void numEl.offsetWidth;
-    numEl.style.animation='';
-    step++;
-    if(step<steps.length){ setTimeout(tick,900); }
-    else{ setTimeout(()=>{ overlay.classList.remove('active'); startGame(); },700); }
-  }
-  tick();
-}
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="restartGame()">🔄 PLAY AGAIN</button>
+        <a href="index.html" class="btn btn-outline">🏠 RETURN HOMEPAGE</a>
+      </div>
+    </div>
+  </div>
 
+  <script>
+    /* ============================================================
+       PARAGRAPHS
+    ============================================================ */
+    const PARAGRAPHS = [
+      // Paragraph 1 – Beelo the Busy Little Bee
+      `Every morning Beelo the little bee wakes up early to begin a brand new day full of adventure and learning Beelo loves flying around the garden visiting colorful flowers and meeting friendly animals along the way As Beelo explores nature he discovers new things about plants trees and the world around him He believes that every day is a wonderful opportunity to learn create and grow Whether it is trying something new helping a friend or practicing an important skill Beelo always gives his best effort He knows that with patience determination and a positive attitude anyone can achieve great things and turn small dreams into amazing accomplishments`,
 
-/* ════════════════════════
-   GAME START / TIMER
-   ════════════════════════ */
-function startGame(){
-  state.active=true;
-  document.getElementById('game-input').focus();
-  state.timer=setInterval(()=>{
-    state.timeLeft--;
-    updateTimerUI(); updateProgressBar();
-    if(state.timeLeft<=10) document.getElementById('timer-wrap').classList.add('urgent');
-    if(state.timeLeft<=0)  endGame();
-  },1000);
-}
+      // Paragraph 2 – The Rainbow Adventure
+      `One sunny day Beelo and his rainbow friends set out on a magical journey to collect colors from around the world They traveled across green fields sparkling rivers and beautiful forests filled with singing birds Along the way they faced exciting challenges that taught them about friendship teamwork and courage Whenever they encountered a problem they worked together to find a solution and encouraged one another to keep going As they continued their adventure they gathered bright colors from every place they visited By the end of the journey they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere`,
 
-function updateTimerUI(){
-  const m=String(Math.floor(state.timeLeft/60)).padStart(2,'0');
-  const s=String(state.timeLeft%60).padStart(2,'0');
-  document.getElementById('timer-display').textContent=`${m}:${s}`;
-}
+      // Paragraph 3 – Beelo's Creative Festival
+      `Today is the biggest creative festival of the year and Beelo is excited to welcome children from all over the world The festival is filled with fun activities such as drawing coloring storytelling and creating wonderful art projects Every child brings unique ideas and imagination to share with others Some children draw beautiful forests while others create colorful oceans magical castles or even planets in outer space Beelo encourages everyone to express themselves freely because every idea is valuable and special Throughout the day children learn that creativity grows when they are confident curious and willing to try new things`
+    ];
 
-function updateProgressBar(){
-  document.getElementById('progress-fill').style.width=(state.timeLeft/60*100)+'%';
-}
+    /* ============================================================
+       REWARD CONFIG
+    ============================================================ */
+    const REWARDS = {
+      none: {
+        level: 'none',
+        emoji: '😊',
+        badgeClass: 'badge-none',
+        headline: 'Cố lên bạn ơi!',
+        levelName: null,
+        desc: null,
+        items: [],
+        showClaim: false
+      },
+      level1: {
+        level: 'level1',
+        emoji: '🐝',
+        badgeClass: 'badge-level1',
+        headline: '🎉 Great Job!',
+        levelName: '🐝 Level 1 – Little Bee',
+        desc: 'Chúc mừng! Bạn nhận được:',
+        items: ['Voucher giảm giá 10%', 'Giảm tối đa 100.000 VNĐ cho đơn hàng tiếp theo'],
+        showClaim: true
+      },
+      level2: {
+        level: 'level2',
+        emoji: '🌈',
+        badgeClass: 'badge-level2',
+        headline: '🎉 Amazing!',
+        levelName: '🌈 Level 2 – Creative Bee',
+        desc: 'Xuất sắc! Bạn nhận được bộ Sticker Beelo:',
+        items: ['Sticker chú ong Beelo', 'Sticker cầu vồng', 'Sticker sáng tạo', 'Sticker học tập'],
+        showClaim: true
+      },
+      level3: {
+        level: 'level3',
+        emoji: '👑',
+        badgeClass: 'badge-level3',
+        headline: '🏆 Super Bee Champion!',
+        levelName: '👑 Level 3 – Super Bee Champion',
+        desc: 'Tuyệt vời! Bạn là nhà vô địch! Phần thưởng Beelo Starter Hive Kit:',
+        items: ['6 Crayons beeswax', 'Giấy vẽ cao cấp', 'Sách tô màu Beelo', '2 hộp màu Dough', 'Túi vải Beelo'],
+        showClaim: true
+      }
+    };
 
+    /* ============================================================
+       STATE
+    ============================================================ */
+    let state = {
+      words: [],
+      currentIndex: 0,
+      correctCount: 0,
+      timeLeft: 60,
+      timer: null,
+      selectedParagraph: '',
+      gameActive: false,
+      finalReward: null
+    };
 
-/* ════════════════════════
-   PASSAGE RENDER
-   ════════════════════════ */
-function renderPassage(){
-  const area=document.getElementById('reading-area');
-  area.innerHTML=state.words.map((w,i)=>{
-    let cls='word';
-    if(i<state.idx)        cls+=' correct';
-    else if(i===state.idx) cls+=' current';
-    return `<span class="${cls}" data-i="${i}">${w}</span>`;
-  }).join(' ');
-  const cur=area.querySelector('.current');
-  if(cur) cur.scrollIntoView({block:'nearest',behavior:'smooth'});
-}
-
-
-/* ════════════════════════
-   WORD SUBMISSION — Space
-   ════════════════════════
-   Design:
-   ✓ Correct → advance idx immediately, re-render, pop animation on just-done word
-   ✗ Wrong   → flash current word red, show toast, clear input, don't advance
-*/
-function submitWord(typed){
-  if(!state.active || !typed || state.idx>=state.words.length) return;
-
-  /* Triple-guarantee: clear input here too so no stale text ever lingers */
-  const inp=document.getElementById('game-input');
-  inp.value='';
-  inp.classList.remove('error');
-
-  const target=state.words[state.idx];
-
-  if(typed.toLowerCase()===target.toLowerCase()){
-    /* ✓ CORRECT — advance state immediately, no blocking */
-    state.correct++;
-    state.idx++;
-    document.getElementById('counter-value').textContent=state.correct;
-    hideErrorToast();
-
-    /* Re-render: completed word gets .correct, new word gets .current */
-    renderPassage();
-
-    /* Add pop animation to the just-completed word */
-    const justDone=document.querySelector(`#reading-area .word[data-i="${state.idx-1}"]`);
-    if(justDone){
-      justDone.classList.add('just-accepted');
-      setTimeout(()=>{ justDone.classList.remove('just-accepted'); },420);
+    /* ============================================================
+       SCREEN NAVIGATION
+    ============================================================ */
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
     }
 
-    /* Focus + clear after render — requestAnimationFrame beats Chrome's value restore */
-    requestAnimationFrame(()=>{
-      const i=document.getElementById('game-input');
-      i.value='';
-      i.focus();
-    });
+    /* ============================================================
+       COUNTDOWN → GAME START
+    ============================================================ */
+    function startCountdown() {
+      showScreen('screen-countdown');
+      const display = document.getElementById('countdown-display');
+      let count = 3;
 
-    if(state.idx>=state.words.length) endGame();
+      const tick = () => {
+        if (count > 0) {
+          display.className = 'countdown-number';
+          display.textContent = count;
+          // Trigger reflow for animation restart
+          void display.offsetWidth;
+          display.className = 'countdown-number';
+          count--;
+          setTimeout(tick, 900);
+        } else {
+          display.className = 'countdown-go';
+          display.textContent = 'GO!';
+          setTimeout(initGame, 700);
+        }
+      };
 
-  } else {
-    /* ✗ WRONG — flash red, toast, clear input, stay on same word */
-    const span=document.querySelector(`#reading-area .word[data-i="${state.idx}"]`);
-    if(span){
-      span.classList.remove('current');
-      span.classList.add('wrong');
-      clearTimeout(state.errorTimer);
-      state.errorTimer=setTimeout(()=>{
-        span.classList.remove('wrong');
-        span.classList.add('current');
-      },600);
+      tick();
     }
-    const inp=document.getElementById('game-input');
-    inp.classList.add('error');
-    showErrorToast();
-    clearTimeout(state.errorTimer);
-    state.errorTimer=setTimeout(()=>{
-      inp.classList.remove('error');
-      hideErrorToast();
-    },1200);
-  }
-}
 
-function showErrorToast(){ document.getElementById('error-toast').classList.add('show'); }
-function hideErrorToast(){ document.getElementById('error-toast').classList.remove('show'); }
+    /* ============================================================
+       INIT GAME
+    ============================================================ */
+    function initGame() {
+      // Pick random paragraph
+      const raw = PARAGRAPHS[Math.floor(Math.random() * PARAGRAPHS.length)];
+      state.words = raw.trim().split(/\s+/);
+      state.currentIndex = 0;
+      state.correctCount = 0;
+      state.timeLeft = 60;
+      state.gameActive = true;
 
+      showScreen('screen-game');
 
-/* ════════════════════════
-   END GAME
-   ════════════════════════ */
-function endGame(){
-  state.active=false;
-  clearInterval(state.timer);
-  clearTimeout(state.errorTimer);
-  hideErrorToast();
-  /* Lower bg volume while win jingle plays, restore after */
-  SFX.bg.volume = 0.12;
-  SFX.win.currentTime = 0;
-  SFX.win.play().catch(()=>{});
-  SFX.win.onended = () => { SFX.bg.volume = 0.35; };
+      // Render words
+      renderWords();
 
-  document.getElementById('result-number').textContent=state.correct;
+      // Reset timer display
+      updateTimerDisplay(60);
+      document.getElementById('timer-bar').style.width = '100%';
+      document.getElementById('timer-bar').style.background = 'linear-gradient(90deg, #fdc602, #ff9f40)';
+      document.getElementById('word-count-num').textContent = '0';
 
-  const claimBtn=document.getElementById('btn-claim');
-  const nextBtn =document.getElementById('btn-next');
-  if(state.correct>=30){
-    claimBtn.classList.remove('hidden');
-    nextBtn.classList.remove('visible'); nextBtn.style.display='none';
-  } else {
-    claimBtn.classList.add('hidden');
-    nextBtn.classList.add('visible');
-  }
-  show('s-result');
-}
+      // Focus input
+      const input = document.getElementById('typing-input');
+      input.value = '';
+      input.disabled = false;
+      input.className = 'typing-input';
+      input.placeholder = 'Bắt đầu gõ từ đầu tiên...';
+      input.focus();
 
+      // Start timer
+      clearInterval(state.timer);
+      state.timer = setInterval(tickTimer, 1000);
+    }
 
-/* ════════════════════════
-   GIFT SCREEN
-   ════════════════════════ */
-function showGiftScreen(){
-  const n=state.correct;
-  const img=(n>=90)?'Gift%203.png':(n>=60)?'Gift%202.png':'Gift%201.png';
-  document.getElementById('s-gift').style.backgroundImage=
-    `url('../cdn.shopify.com/s/game_img/${img}')`;
-  ['form-name','form-email','form-phone','form-note'].forEach(id=>{
-    document.getElementById(id).value='';
-  });
-  show('s-gift');
-}
+    /* ============================================================
+       RENDER WORDS
+    ============================================================ */
+    function renderWords() {
+      const container = document.getElementById('text-display');
+      container.innerHTML = state.words.map((word, i) =>
+        `<span class="word-span" id="w${i}">${word}</span>`
+      ).join(' ');
 
-function submitGift(){
-  const name =document.getElementById('form-name').value.trim();
-  const email=document.getElementById('form-email').value.trim();
-  if(!name){ alert('Please enter your name!'); document.getElementById('form-name').focus(); return; }
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-    alert('Please enter a valid email!'); document.getElementById('form-email').focus(); return;
-  }
-  show('s-finish');
-}
+      highlightCurrentWord();
+    }
 
+    function highlightCurrentWord() {
+      // Clear all highlights first
+      document.querySelectorAll('.word-span').forEach((el, i) => {
+        if (!el.classList.contains('correct') && !el.classList.contains('wrong')) {
+          el.classList.remove('current');
+        }
+      });
 
-/* ════════════════════════
-   INPUT EVENTS
-   ════════════════════════ */
-document.addEventListener('DOMContentLoaded',()=>{
-  const inp=document.getElementById('game-input');
+      const curr = document.getElementById(`w${state.currentIndex}`);
+      if (curr && !curr.classList.contains('correct') && !curr.classList.contains('wrong')) {
+        curr.classList.add('current');
+        // Scroll into view if needed
+        curr.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
 
-  /* ── Space → submit ──
-     keydown: capture space before it enters the field.
-     We read value, immediately blank it, then submit.
-     After submit we use requestAnimationFrame to blank+refocus again —
-     this beats macOS Chrome's undo-stack value restoration that can
-     re-insert the previous text after a programmatic .focus() call. */
-  inp.addEventListener('keydown',e=>{
-    if(!state.active) return;
-    if(e.key===' '){
+    /* ============================================================
+       TIMER
+    ============================================================ */
+    function tickTimer() {
+      state.timeLeft--;
+      updateTimerDisplay(state.timeLeft);
+
+      // Update bar
+      const pct = (state.timeLeft / 60) * 100;
+      const bar = document.getElementById('timer-bar');
+      bar.style.width = pct + '%';
+
+      if (state.timeLeft <= 10) {
+        bar.style.background = 'linear-gradient(90deg, #e05555, #ff6b6b)';
+        document.getElementById('timer-display').classList.add('urgent');
+      }
+
+      if (state.timeLeft <= 0) {
+        endGame();
+      }
+    }
+
+    function updateTimerDisplay(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      document.getElementById('timer-display').textContent = `${m}:${s}`;
+    }
+
+    /* ============================================================
+       INPUT HANDLING
+    ============================================================ */
+    function handleInput(e) {
+      if (!state.gameActive) return;
+
+      const typed = e.target.value;
+      const expected = state.words[state.currentIndex] || '';
+      const input = e.target;
+
+      // Check if typed includes a space → commit word
+      if (typed.includes(' ') || typed.endsWith(' ')) {
+        const word = typed.trim();
+        commitWord(word, expected);
+        input.value = '';
+        input.className = 'typing-input';
+        return;
+      }
+
+      // Live color feedback
+      if (typed === '') {
+        input.className = 'typing-input';
+        const curr = document.getElementById(`w${state.currentIndex}`);
+        if (curr) curr.className = 'word-span current';
+        return;
+      }
+
+      const isMatch = expected.startsWith(typed);
+      input.className = 'typing-input' + (isMatch ? '' : ' input-wrong');
+
+      // Color the current word span
+      const curr = document.getElementById(`w${state.currentIndex}`);
+      if (curr) {
+        curr.className = 'word-span current ' + (isMatch ? '' : 'wrong-typing');
+      }
+    }
+
+    function handleKeydown(e) {
+      if (!state.gameActive) return;
+
+      // Allow space to commit
+      if (e.key === ' ') {
+        e.preventDefault();
+        const input = e.target;
+        const typed = input.value.trim();
+        if (typed === '') return; // ignore empty
+        const expected = state.words[state.currentIndex] || '';
+        commitWord(typed, expected);
+        input.value = '';
+        input.className = 'typing-input';
+      }
+    }
+
+    function commitWord(typed, expected) {
+      const span = document.getElementById(`w${state.currentIndex}`);
+
+      if (typed === expected) {
+        state.correctCount++;
+        if (span) span.className = 'word-span correct';
+        document.getElementById('word-count-num').textContent = state.correctCount;
+      } else {
+        if (span) span.className = 'word-span wrong';
+      }
+
+      state.currentIndex++;
+
+      // Finished all words
+      if (state.currentIndex >= state.words.length) {
+        endGame();
+        return;
+      }
+
+      highlightCurrentWord();
+    }
+
+    /* ============================================================
+       END GAME
+    ============================================================ */
+    function endGame() {
+      clearInterval(state.timer);
+      state.gameActive = false;
+
+      // Disable input
+      const input = document.getElementById('typing-input');
+      input.disabled = true;
+      input.placeholder = 'Hết giờ!';
+
+      // Brief delay before showing result
+      setTimeout(showResult, 600);
+    }
+
+    function getRewardTier(score) {
+      if (score >= 90) return REWARDS.level3;
+      if (score >= 60) return REWARDS.level2;
+      if (score >= 30) return REWARDS.level1;
+      return REWARDS.none;
+    }
+
+    function showResult() {
+      const score = state.correctCount;
+      const reward = getRewardTier(score);
+      state.finalReward = reward;
+
+      // Badge
+      const badge = document.getElementById('result-badge');
+      badge.className = `result-badge ${reward.badgeClass}`;
+      badge.textContent = reward.emoji;
+
+      // Headline
+      document.getElementById('result-headline').textContent = reward.headline;
+
+      // Score
+      document.getElementById('result-score').textContent = score;
+
+      // Reward box
+      const box = document.getElementById('reward-box');
+      if (reward.level !== 'none') {
+        document.getElementById('reward-level-name').textContent = reward.levelName;
+        document.getElementById('reward-desc').textContent = reward.desc;
+        const ul = document.getElementById('reward-items');
+        ul.innerHTML = reward.items.map(item => `<li>${item}</li>`).join('');
+        box.style.display = 'block';
+      } else {
+        box.style.display = 'none';
+        // Add encouraging message
+        document.getElementById('result-headline').textContent =
+          `Cố lên! Bạn gõ được ${score} từ 💪`;
+      }
+
+      // Claim button
+      const claimBtn = document.getElementById('btn-claim');
+      claimBtn.style.display = reward.showClaim ? 'inline-flex' : 'none';
+
+      // Populate claim screen
+      if (reward.showClaim) {
+        document.getElementById('claim-reward-name').textContent = reward.levelName;
+        document.getElementById('reward-reminder').innerHTML =
+          `🎁 Phần thưởng của bạn: <strong>${reward.levelName}</strong><br>
+           📊 Số từ gõ đúng: <strong style="color:var(--green)">${score} từ</strong>`;
+      }
+
+      showScreen('screen-result');
+    }
+
+    /* ============================================================
+       CLAIM FORM SUBMIT
+    ============================================================ */
+    function submitClaim(e) {
       e.preventDefault();
-      e.stopPropagation();
-      const typed=inp.value.trim();
-      inp.value='';
-      inp.classList.remove('error');
-      if(typed) submitWord(typed);
-      /* Beat macOS Chrome value-restore on next paint */
-      requestAnimationFrame(()=>{ inp.value=''; });
-    }
-  });
 
-  /* Belt-and-suspenders: strip any space that slipped past keydown */
-  inp.addEventListener('keyup',e=>{
-    if(e.key===' ') inp.value=inp.value.replace(/\s+/g,'');
-  });
+      const name  = document.getElementById('field-name').value.trim();
+      const email = document.getElementById('field-email').value.trim();
+      const phone = document.getElementById('field-phone').value.trim();
 
-  /* Real-time red border when prefix doesn't match */
-  inp.addEventListener('input',()=>{
-    if(!state.active) return;
-    const typed =inp.value;
-    const target=(state.words[state.idx]||'').toLowerCase();
-    if(typed && !target.startsWith(typed.toLowerCase())){
-      inp.classList.add('error');
-    } else {
-      inp.classList.remove('error');
-    }
-  });
+      if (!name || !email || !phone) {
+        alert('Vui lòng điền đầy đủ Họ tên, Email và Số điện thoại nhé! 😊');
+        return;
+      }
 
-  /* Click anywhere on game screen → refocus input */
-  document.getElementById('s-game').addEventListener('click',e=>{
-    if(state.active && e.target!==document.querySelector('.btn-close-hotspot')){
-      inp.focus();
+      // Populate thank-you screen
+      document.getElementById('thanks-words').textContent = `${state.correctCount} từ`;
+      document.getElementById('thanks-level').textContent = state.finalReward?.levelName || '';
+
+      showScreen('screen-thanks');
     }
-  });
-});
-</script>
+
+    /* ============================================================
+       RESTART
+    ============================================================ */
+    function restartGame() {
+      // Reset form
+      document.getElementById('claim-form').reset();
+      // Clear any typing state
+      clearInterval(state.timer);
+      state.gameActive = false;
+      startCountdown();
+    }
+  </script>
 </body>
 </html>
