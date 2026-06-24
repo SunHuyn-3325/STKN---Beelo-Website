@@ -37,7 +37,7 @@ html,body{
    SCREEN 1 — MAIN
    ══════════════════════════════ */
 #s-main{
-  background-image:url('../cdn.shopify.com/s/game_img/Main%20screen.png');
+  background-image:url('../cdn.shopify.com/s/game_img/Main\ screen.png');
 }
 .btn-start{
   position:absolute;
@@ -309,7 +309,7 @@ html,body{
    Form fields laid over the PNG's existing white card area (right panel)
    PNG has title/header baked in — we only place inputs + button
    ══════════════════════════════ */
-#s-gift{background-image:url('../cdn.shopify.com/s/game_img/Gift%201.png')}
+#s-gift{background-image:url('../cdn.shopify.com/s/game_img/Gift\ 1.png')}
 
 /* Transparent container sitting inside PNG's right white card */
 .gift-form-panel{
@@ -777,7 +777,7 @@ function endGame(){
    ════════════════════════ */
 function showGiftScreen(){
   const n=state.correct;
-  const img=(n>=90)?'Gift%203.png':(n>=60)?'Gift%202.png':'Gift%201.png';
+  const img=(n>=90)?'../cdn.shopify.com/s/game_img/Gift%203.png':(n>=60)?'../cdn.shopify.com/s/game_img/Gift%202.png':'../cdn.shopify.com/s/game_img/Gift%201.png';
   document.getElementById('s-gift').style.backgroundImage=
     `url('../cdn.shopify.com/s/game_img/${img}')`;
   ['form-name','form-email','form-phone','form-note'].forEach(id=>{
