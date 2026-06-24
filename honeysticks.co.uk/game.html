@@ -519,6 +519,48 @@ textarea.form-input{resize:none;height:clamp(38px,5.5vh,62px)}
 
 
 <script>
+/* ════════════════════════
+   AUDIO
+   ════════════════════════ */
+const SFX = {
+  bg:    new Audio('../cdn.shopify.com/s/audio/nhạc nền.mp3'),
+  click: new Audio('../cdn.shopify.com/s/audio/click game.mp3'),
+  win:   new Audio('../cdn.shopify.com/s/audio/win_game.mp3'),
+};
+SFX.bg.loop   = true;
+SFX.bg.volume = 0.35;
+SFX.click.volume = 0.7;
+SFX.win.volume   = 0.9;
+
+function playClick(){
+  SFX.click.currentTime = 0;
+  SFX.click.play().catch(()=>{});
+}
+function playBg(){
+  SFX.bg.currentTime = 0;
+  SFX.bg.play().catch(()=>{});
+}
+function stopBg(){
+  SFX.bg.pause();
+  SFX.bg.currentTime = 0;
+}
+function playWin(){
+  stopBg();
+  SFX.win.currentTime = 0;
+  SFX.win.play().catch(()=>{});
+}
+
+/* Start bg music on first user interaction (beats autoplay policy) */
+let _bgStarted = false;
+document.addEventListener('click', () => {
+  if (!_bgStarted) { _bgStarted = true; playBg(); }
+}, { once: true });
+
+/* Attach click sound to every button (delegated) */
+document.addEventListener('click', e => {
+  if (e.target.closest('button, .btn-start')) playClick();
+}, true);
+
 /* ── Paragraphs (no punctuation for clean word matching) ── */
 const PARAGRAPHS = [
   "Every morning Beelo the little bee wakes up early to begin a brand-new day full of adventure and learning Beelo loves flying around the garden visiting colorful flowers and meeting friendly animals along the way As Beelo explores nature he discovers new things about plants trees and the world around him He believes that every day is a wonderful opportunity to learn create and grow Whether it is trying something new helping a friend or practicing an important skill Beelo always gives his best effort He knows that with patience determination and a positive attitude anyone can achieve great things and turn small dreams into amazing accomplishments",
@@ -541,6 +583,8 @@ function show(id){
 
 function backToMain(){
   state.active=false;
+  SFX.win.pause(); SFX.win.currentTime=0;
+  SFX.bg.volume=0.35;
   clearInterval(state.timer);
   clearTimeout(state.errorTimer);
   const inp=document.getElementById('game-input');
@@ -707,6 +751,11 @@ function endGame(){
   clearInterval(state.timer);
   clearTimeout(state.errorTimer);
   hideErrorToast();
+  /* Lower bg volume while win jingle plays, restore after */
+  SFX.bg.volume = 0.12;
+  SFX.win.currentTime = 0;
+  SFX.win.play().catch(()=>{});
+  SFX.win.onended = () => { SFX.bg.volume = 0.35; };
 
   document.getElementById('result-number').textContent=state.correct;
 
