@@ -8,7 +8,6 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-/* Letterbox container — warm cream matches the game backgrounds */
 html,body{
   width:100%;height:100%;
   overflow:hidden;
@@ -16,9 +15,7 @@ html,body{
   display:flex;align-items:center;justify-content:center;
 }
 
-/* ── 3:2 Stage — all screens positioned relative to this ── */
-/* On 16:9 screens: height fills viewport, narrow bars on sides */
-/* On 4:3 screens : width fills viewport, thin bars top/bottom */
+/* Stage 3:2 — matches PNG size 1536x1024 */
 #stage{
   position:relative;
   width:min(100vw, calc(100vh * 1.5));
@@ -27,9 +24,6 @@ html,body{
   flex-shrink:0;
 }
 
-/* ── Shared screen shell ── */
-/* background-size:100% 100% stretches to fill exactly — no crop since
-   the stage is always 3:2 matching the 1536×1024 PNGs               */
 .screen{
   position:absolute;inset:0;
   display:none;
@@ -39,281 +33,357 @@ html,body{
 .screen.active{display:block}
 
 
-/* ════════════════════════════════════════════════════════
-   SCREEN 1 — MAIN  (Main screen.png)
-   All text / artwork is baked into the PNG.
-   Overlay: one START GAME button at bottom-centre.
-   ════════════════════════════════════════════════════════ */
-#s-main{background-image:url('game-assets/Main%20screen.png');}
-
+/* ══════════════════════════════
+   SCREEN 1 — MAIN
+   ══════════════════════════════ */
+#s-main{
+  background-image:url('../cdn.shopify.com/s/game_img/Main%20screen.png');
+}
 .btn-start{
   position:absolute;
-  left:50%;bottom:8%;
+  left:50%;bottom:10%;
   transform:translateX(-50%);
-  background:linear-gradient(135deg,#FF9800,#FFC107);
+  background:linear-gradient(135deg,#FF8C00,#FFC107);
   color:#fff;border:none;border-radius:60px;
-  padding:.9% 6%;
+  padding:.8% 8%;
   font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.9rem,2.1vw,1.55rem);
+  font-size:clamp(1rem,2.5vw,1.7rem);
   letter-spacing:1px;cursor:pointer;white-space:nowrap;
-  box-shadow:0 6px 22px rgba(255,152,0,.5),inset 0 1px 0 rgba(255,255,255,.3);
+  box-shadow:0 6px 24px rgba(255,152,0,.55),inset 0 1px 0 rgba(255,255,255,.35);
   transition:transform .18s,box-shadow .18s;
 }
 .btn-start:hover{
   transform:translateX(-50%) translateY(-3px);
-  box-shadow:0 12px 30px rgba(255,152,0,.6);
+  box-shadow:0 14px 36px rgba(255,152,0,.65);
 }
 
 
-/* ════════════════════════════════════════════════════════
-   SCREEN 2 — GAME  (Game.png)
-   PNG contains: card frame (15 – 89 % W, 19 – 83 % H),
-                 input bar  (15.5 – 74 % W, 86 – 91.5 % H),
-                 counter box(77 – 88 % W, 86 – 94 % H),
-                 BeeLo logo, bee, rainbow, gear ⚙, ✕ icon.
-   Overlays are TRANSPARENT to reveal the PNG chrome beneath.
-   ════════════════════════════════════════════════════════ */
-#s-game{background-image:url('game-assets/Game.png');}
-
-/* Timer pill — visible overlay, floats in the empty centre-top zone */
-.timer-pill{
-  position:absolute;
-  left:50%;top:1.5%;
-  transform:translateX(-50%);
-  background:#FFF4D6;border:2.5px solid #FFD54A;border-radius:60px;
-  padding:.45% 2.2%;
+/* ══════════════════════════════
+   COUNTDOWN OVERLAY
+   ══════════════════════════════ */
+.countdown-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.42);
+  display:none;align-items:center;justify-content:center;
+  z-index:50;
+}
+.countdown-overlay.active{display:flex}
+.countdown-number{
   font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.9rem,2.3vw,1.65rem);
-  color:#5B4528;
-  box-shadow:0 3px 12px rgba(255,213,74,.35);
-  white-space:nowrap;
-  display:flex;align-items:center;gap:.4em;
-  z-index:2;
+  font-size:clamp(5rem,18vw,14rem);
+  color:#fff;
+  text-shadow:0 6px 30px rgba(0,0,0,.4),0 0 60px rgba(255,200,0,.6);
+  animation:popIn .55s cubic-bezier(.3,1.6,.5,1) forwards;
+  line-height:1;
+}
+.countdown-number.go{color:#FFD54A;font-size:clamp(3rem,12vw,9rem)}
+@keyframes popIn{
+  0%  {transform:scale(.2);opacity:0}
+  60% {transform:scale(1.15);opacity:1}
+  100%{transform:scale(1);opacity:1}
 }
 
-/* Reading card — transparent, sits perfectly inside the dashed white card */
-/* Card in PNG: left≈15.1%, top≈19%, width≈73.6%, height≈63.7% */
-.reading-card{
+
+/* ══════════════════════════════
+   SCREEN 2 — GAME
+   ══════════════════════════════ */
+#s-game{
+  background-image:url('../cdn.shopify.com/s/game_img/Game.png');
+}
+
+.timer-wrap{
   position:absolute;
-  left:16%;top:20%;width:72%;height:62%;
-  background:transparent;border:none;
-  padding:1.2% 2%;
-  overflow-y:auto;
-  font-family:'Nunito',sans-serif;
-  font-size:clamp(.7rem,1.35vw,1rem);
-  line-height:1.95;
-  color:#555;
-  word-break:break-word;
+  left:50%;top:2.5%;
+  transform:translateX(-50%);
+  background:#fff8e1;border:2.5px solid #FFD54A;border-radius:60px;
+  padding:.5% 3%;
+  display:flex;align-items:center;gap:.4em;
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(.95rem,2.3vw,1.65rem);
+  color:#5B4528;
+  box-shadow:0 4px 14px rgba(255,213,74,.4);
+  white-space:nowrap;z-index:5;
 }
-.reading-card::-webkit-scrollbar{width:5px}
-.reading-card::-webkit-scrollbar-thumb{background:#FFD54A80;border-radius:4px}
+.timer-wrap.urgent{
+  background:#ffe0e0;border-color:#f44336;color:#c62828;
+  animation:timerShake .4s ease-in-out;
+}
+@keyframes timerShake{
+  0%,100%{transform:translateX(-50%)}
+  25%{transform:translateX(calc(-50% - 5px))}
+  75%{transform:translateX(calc(-50% + 5px))}
+}
 
-/* Word states */
+.progress-bar-wrap{
+  position:absolute;left:21%;top:10.5%;
+  width:58%;height:1%;
+  background:rgba(255,255,255,.5);border-radius:20px;overflow:hidden;z-index:4;
+}
+.progress-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,#9CCC65,#FFC107,#FF8A65);
+  border-radius:20px;width:100%;
+  transition:width 1s linear;
+}
+
+/* Passage card — inside clear area of Game.png */
+.passage-card{
+  position:absolute;
+  left:21%;top:12%;width:57%;height:64%;
+  background:rgba(255,255,255,.93);
+  border:2.5px solid #FFE082;border-radius:20px;
+  padding:2.5% 3%;overflow-y:auto;
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(.72rem,1.3vw,1rem);
+  line-height:2.1;color:#5B4528;word-break:break-word;
+  box-shadow:0 8px 32px rgba(255,180,0,.2);
+}
+.passage-card::-webkit-scrollbar{width:5px}
+.passage-card::-webkit-scrollbar-thumb{background:#FFD54A80;border-radius:4px}
+
+/* ── Word states ── */
 .word{display:inline}
+
 .word.correct{
   background:linear-gradient(90deg,#FF8A65,#FFD54A,#9CCC65,#64B5F6,#BA68C8);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
   background-clip:text;font-weight:900;
 }
+/* Bounce pop when a word is just accepted */
+.word.just-accepted{
+  background:linear-gradient(90deg,#FF8A65,#FFD54A,#9CCC65,#64B5F6,#BA68C8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;font-weight:900;
+  animation:acceptPop .4s cubic-bezier(.3,1.6,.5,1);
+}
+@keyframes acceptPop{
+  0%  {transform:scale(1)}
+  50% {transform:scale(1.3)}
+  100%{transform:scale(1)}
+}
+
 .word.current{
-  background:#FFF4B0;color:#5B4528;
+  background:#FFF176;color:#5B4528;
   -webkit-text-fill-color:#5B4528;
   border-radius:6px;padding:1px 5px;font-weight:800;
-  animation:pulse 1.4s ease-in-out infinite;
+  outline:2px dashed #FFB300;
+  animation:pulse 1.2s ease-in-out infinite;
 }
 .word.wrong{
-  color:#FF6B6B;-webkit-text-fill-color:#FF6B6B;
-  background:#FFE5E5;border-radius:4px;padding:1px 4px;font-weight:800;
+  color:#fff;-webkit-text-fill-color:#fff;
+  background:#EF5350;border-radius:6px;padding:1px 5px;font-weight:800;
 }
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
 
-/* Typing input — transparent, overlays the yellow input bar in the PNG */
-/* Bar in PNG: left≈15.1%, top≈85.6%, width≈58.9%, height≈5.9% */
+/* ── Bottom bar ── */
+.game-bottom{
+  position:absolute;left:21%;bottom:4.5%;
+  width:57%;height:9%;
+  display:flex;gap:2%;align-items:stretch;
+}
 .typing-input{
-  position:absolute;
-  left:15.5%;top:86%;width:58.5%;height:5.5%;
-  background:transparent;border:none;outline:none;
-  padding:.3% 2%;
+  flex:1;
+  background:#fff8e1;border:2.5px solid #FFD54A;border-radius:14px;
+  padding:0 3%;
   font-family:'Nunito',sans-serif;
-  font-size:clamp(.8rem,1.45vw,1.05rem);
-  color:#5B4528;font-weight:700;
+  font-size:clamp(.85rem,1.5vw,1.1rem);
+  color:#5B4528;font-weight:700;outline:none;
   caret-color:#FF9800;
+  transition:border-color .15s,box-shadow .15s,background .15s;
 }
-.typing-input::placeholder{color:#c8b898}
-.typing-input.error{background:rgba(255,107,107,.08)}
+.typing-input:focus{border-color:#FF9800;box-shadow:0 3px 12px rgba(255,152,0,.25)}
+.typing-input.error{
+  border-color:#EF5350 !important;
+  background:#FFEBEE !important;
+  box-shadow:0 0 0 3px rgba(239,83,80,.2) !important;
+}
+.typing-input::placeholder{color:#c8b898;font-weight:400}
 
-/* Words-typed number — floats inside the small counter box in the PNG */
-/* Box in PNG: left≈76.4%, top≈85.6%, width≈11.3%, height≈8.5% */
-.words-typed-num{
-  position:absolute;
-  left:77%;top:86%;
-  width:11%;height:9%;
-  display:flex;align-items:center;justify-content:center;
+.counter-box{
+  width:15%;
+  background:linear-gradient(135deg,#FF9800,#FFC107);
+  border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(255,152,0,.35);flex-shrink:0;
+}
+.counter-num{
   font-family:'Fredoka One',sans-serif;
-  font-size:clamp(1.1rem,2.8vw,2.2rem);
-  background:linear-gradient(135deg,#FF8A65,#BA68C8);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-  line-height:1;
+  font-size:clamp(1.1rem,2.8vw,2.1rem);
+  color:#fff;line-height:1;
+}
+.counter-lbl{
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(.42rem,.75vw,.58rem);
+  color:rgba(255,255,255,.92);font-weight:800;
+  letter-spacing:.5px;text-transform:uppercase;
 }
 
-/* Invisible close-button hotspot — covers the ✕ drawn in the PNG */
-/* ✕ icon in PNG: right≈6.7%, top≈2.2%, width≈4.7%, height≈6.9% */
+/* Error toast */
+.error-toast{
+  position:absolute;left:21%;bottom:15%;width:57%;
+  background:#FFEBEE;border:2px solid #EF5350;border-radius:10px;
+  padding:.5% 2%;
+  font-family:'Nunito',sans-serif;
+  font-size:clamp(.62rem,1.1vw,.82rem);
+  color:#c62828;font-weight:700;
+  display:none;align-items:center;gap:.5em;z-index:6;
+}
+.error-toast.show{display:flex;animation:toastIn .2s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
 .btn-close-hotspot{
-  position:absolute;
-  right:6%;top:2%;
-  width:5%;height:7%;
-  background:transparent;border:none;cursor:pointer;
-  border-radius:50%;
-  z-index:3;
+  position:absolute;right:5%;top:2%;
+  width:5%;height:8%;
+  background:transparent;border:none;cursor:pointer;border-radius:50%;z-index:8;
 }
 
 
-/* ════════════════════════════════════════════════════════
-   SCREEN 3 — RESULT  (Result.png)
-   PNG contains: Great Job! banner, "Bạn đã gõ được:" text,
-                 empty white score box, empty orange CTA bar.
-   Overlays: score number + claim button (transparent hotspot
-             on orange bar) / retry button (visible, replaces).
-   ════════════════════════════════════════════════════════ */
-#s-result{background-image:url('game-assets/Result.png');}
+/* ══════════════════════════════
+   SCREEN 3 — RESULT
+   PNG layout:
+     "Bạn đã gõ được:" label  ~42–49 %
+     White rounded box         ~50–73 %
+     Button area               ~76–88 %
+   ══════════════════════════════ */
+#s-result{
+  background-image:url('../cdn.shopify.com/s/game_img/Result.png');
+}
 
-/* Score number — renders inside the white score box in the PNG */
-/* Score box in PNG: left≈18.9%, top≈52%, width≈63%, height≈19.7% */
-.result-score-num{
+/* Score — tight stack inside white box */
+.result-score-wrap{
   position:absolute;
-  left:19%;top:52%;width:63%;height:20%;
+  left:17%;top:52%;
+  width:66%;height:19%;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   gap:2%;
+}
+.result-score-num{
   font-family:'Fredoka One',sans-serif;
-  font-size:clamp(1.8rem,4.8vw,3.6rem);
-  background:linear-gradient(135deg,#FF8A65,#9CCC65);
+  font-size:clamp(2.2rem,5vw,4.2rem);
+  background:linear-gradient(135deg,#FF7043,#FFA726,#66BB6A);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;line-height:1;
+  background-clip:text;line-height:1.05;
 }
 .result-score-sub{
   font-family:'Nunito',sans-serif;
-  font-size:clamp(.6rem,1vw,.85rem);
-  font-weight:800;color:#5B4528;
-  -webkit-text-fill-color:#5B4528;
+  font-size:clamp(.7rem,1.1vw,.9rem);
+  font-weight:800;color:#7B5230;
 }
 
-/* Claim button — transparent hotspot on the orange bar in Result.png */
-/* Orange bar in PNG: left≈19%, top≈76.1%, width≈63%, height≈9.3% */
-.btn-claim{
+/* Button row — centred, auto-width */
+.result-btn-row{
   position:absolute;
-  left:19%;top:76%;width:63%;height:9%;
-  background:transparent;border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:.4em;
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.85rem,1.7vw,1.3rem);
-  color:#fff;
-  z-index:2;
+  left:17%;top:76%;
+  width:66%;height:13%;
+  display:flex;align-items:center;justify-content:center;
 }
+.btn-claim,.btn-next{
+  height:78%;
+  padding:0 clamp(24px,5.5vw,66px);
+  border:none;border-radius:60px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.5em;
+  font-family:'Fredoka One',sans-serif;
+  font-size:clamp(1rem,2.1vw,1.55rem);
+  color:#fff;white-space:nowrap;letter-spacing:.5px;
+  transition:transform .18s,box-shadow .18s;
+}
+.btn-claim{
+  background:linear-gradient(135deg,#FF9800,#FFC107);
+  box-shadow:0 6px 20px rgba(255,152,0,.5);
+}
+.btn-claim:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,152,0,.65)}
 .btn-claim.hidden{display:none}
 
-/* Retry button — replaces claim when score < 30, rendered visibly */
-.btn-retry{
-  position:absolute;
-  left:19%;top:76%;width:63%;height:9%;
-  background:linear-gradient(135deg,#64B5F6,#2196F3);
-  border:none;border-radius:60px;cursor:pointer;
-  display:none;align-items:center;justify-content:center;gap:.4em;
-  font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.85rem,1.7vw,1.3rem);
-  color:#fff;
-  box-shadow:0 6px 20px rgba(33,150,243,.4);
-  transition:transform .18s;
+.btn-next{
+  background:linear-gradient(135deg,#42A5F5,#1565C0);
+  box-shadow:0 6px 20px rgba(33,150,243,.45);
+  display:none;
 }
-.btn-retry.visible{display:flex}
-.btn-retry:hover{transform:translateY(-2px)}
+.btn-next.visible{display:flex}
+.btn-next:hover{transform:translateY(-2px)}
 
 
-/* ════════════════════════════════════════════════════════
-   SCREEN 4 — GIFT  (Gift 1 / 2 / 3.png)
-   PNG contains: left-side prize artwork, right dashed panel,
-                 "Nhận quà từ BeeLo" title, subtitle text.
-   Form fields overlay the empty lower portion of right panel.
-   Right panel: x ≈ 780–1530 → left: 50.8 %
-   Form starts below subtitle ≈ top 24 %
-   ════════════════════════════════════════════════════════ */
-#s-gift{background-image:url('game-assets/Gift%201.png');}
+/* ══════════════════════════════
+   SCREEN 4 — GIFT
+   Form fields laid over the PNG's existing white card area (right panel)
+   PNG has title/header baked in — we only place inputs + button
+   ══════════════════════════════ */
+#s-gift{background-image:url('../cdn.shopify.com/s/game_img/Gift%201.png')}
 
-/* Form starts below subtitle in PNG (subtitle ends ≈ 36.6%) */
+/* Transparent container sitting inside PNG's right white card */
 .gift-form-panel{
   position:absolute;
-  left:51%;top:37%;
-  width:46%;height:57%;
+  left:55%;top:36%;
+  width:38%;height:58%;
+  background:transparent;
   display:flex;flex-direction:column;
-  padding:0 2.5% 2.5% 2%;
-  gap:.8%;
+  gap:3.5%;
 }
-.form-group{
-  display:flex;flex-direction:column;
-  gap:.3%;flex:1;min-height:0;
-}
+
+.form-group{display:flex;flex-direction:column;gap:5%}
 .form-label{
   font-family:'Nunito',sans-serif;
-  font-size:clamp(.6rem,1vw,.82rem);
-  font-weight:800;color:#5B4528;
-  display:flex;align-items:center;gap:.4em;
-  flex-shrink:0;margin-bottom:.2%;
+  font-size:clamp(.55rem,.9vw,.75rem);
+  font-weight:800;color:#4A3420;
+}
+/* Input row with emoji icon */
+.form-input-wrap{
+  position:relative;display:flex;align-items:center;
+}
+.form-input-icon{
+  position:absolute;left:clamp(7px,1vw,12px);
+  font-size:clamp(.65rem,1vw,.82rem);
+  pointer-events:none;line-height:1;
 }
 .form-input{
-  background:rgba(255,255,255,.82);
-  border:1.5px solid #ddd4be;border-radius:10px;
-  padding:.5% 1.5%;
+  width:100%;
+  background:#FAF7F2;
+  border:1.5px solid #E2D0B8;border-radius:10px;
+  padding:clamp(5px,.9vh,10px) clamp(8px,1.2vw,14px) clamp(5px,.9vh,10px) clamp(26px,3.2vw,38px);
   font-family:'Nunito',sans-serif;
-  font-size:clamp(.62rem,1vw,.82rem);
+  font-size:clamp(.55rem,.9vw,.75rem);
   color:#5B4528;outline:none;
-  transition:border-color .2s,box-shadow .2s;
-  flex:1;min-height:0;
+  transition:border-color .18s,box-shadow .18s;
+  box-sizing:border-box;
 }
 .form-input:focus{
-  border-color:#FFD54A;
-  box-shadow:0 2px 8px rgba(255,213,74,.25);
+  border-color:#FFB300;background:#fff;
+  box-shadow:0 2px 8px rgba(255,179,0,.18);
 }
-.form-input::placeholder{color:#c0b09a}
-textarea.form-input{resize:none}
+.form-input::placeholder{color:#C4A882;font-weight:400}
+textarea.form-input{resize:none;height:clamp(38px,5.5vh,62px)}
 
 .btn-hoan-tat{
-  margin-top:.8%;
-  background:linear-gradient(135deg,#FF9800,#FFC107);
+  background:linear-gradient(90deg,#F5A623,#F0821A);
   color:#fff;border:none;border-radius:60px;
-  padding:clamp(7px,1.4vh,13px) 0;width:100%;
+  padding:clamp(8px,1.4vh,14px) 0;width:100%;
   font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.85rem,1.65vw,1.25rem);
-  letter-spacing:.5px;cursor:pointer;
-  box-shadow:0 5px 18px rgba(255,152,0,.4);
+  font-size:clamp(.85rem,1.6vw,1.25rem);
+  letter-spacing:1px;cursor:pointer;
+  box-shadow:0 5px 18px rgba(240,130,26,.45);
   transition:transform .18s,box-shadow .18s;
-  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:.4em;
+  margin-top:auto;
 }
-.btn-hoan-tat:hover{
-  transform:translateY(-2px);
-  box-shadow:0 9px 24px rgba(255,152,0,.5);
-}
+.btn-hoan-tat:hover{transform:translateY(-2px);box-shadow:0 9px 26px rgba(240,130,26,.55)}
 
 
-/* ════════════════════════════════════════════════════════
-   SCREEN 5 — FINISH  (Finish.png)
-   PNG contains: full thank-you card with all text.
-   Overlay: PLAY AGAIN + VỀ TRANG CHỦ buttons at bottom.
-   ════════════════════════════════════════════════════════ */
-#s-finish{background-image:url('game-assets/Finish.png');}
+/* ══════════════════════════════
+   SCREEN 5 — FINISH
+   ══════════════════════════════ */
+#s-finish{background-image:url('../cdn.shopify.com/s/game_img/Finish.png')}
 
 .finish-buttons{
-  position:absolute;
-  left:50%;bottom:5%;
+  position:absolute;left:50%;bottom:6%;
   transform:translateX(-50%);
-  display:flex;gap:2vw;
-  align-items:center;
+  display:flex;gap:2.5vw;align-items:center;
 }
 .btn-play-again,.btn-home-btn{
   border:none;border-radius:60px;
-  padding:clamp(9px,1.6vw,15px) clamp(18px,3.2vw,44px);
+  padding:clamp(12px,2.2vw,22px) clamp(28px,5vw,70px);
   font-family:'Fredoka One',sans-serif;
-  font-size:clamp(.8rem,1.5vw,1.15rem);
+  font-size:clamp(1rem,2vw,1.5rem);
   letter-spacing:.5px;cursor:pointer;white-space:nowrap;
   transition:transform .18s,box-shadow .18s;
   display:flex;align-items:center;gap:.4em;
@@ -324,7 +394,7 @@ textarea.form-input{resize:none}
 }
 .btn-play-again:hover{transform:translateY(-3px)}
 .btn-home-btn{
-  background:linear-gradient(135deg,#64B5F6,#2196F3);color:#fff;
+  background:linear-gradient(135deg,#42A5F5,#1565C0);color:#fff;
   box-shadow:0 6px 20px rgba(33,150,243,.4);
 }
 .btn-home-btn:hover{transform:translateY(-3px)}
@@ -336,77 +406,103 @@ textarea.form-input{resize:none}
 
 <!-- ════ SCREEN 1 — MAIN ════ -->
 <div id="s-main" class="screen active">
-  <button class="btn-start" onclick="startGame()">START GAME &nbsp;›</button>
+  <button class="btn-start" onclick="beginCountdown()">Start game &nbsp;&rsaquo;</button>
 </div>
 
 
 <!-- ════ SCREEN 2 — GAME ════ -->
 <div id="s-game" class="screen">
-  <!-- Timer: visible overlay in the empty center-top strip -->
-  <div class="timer-pill">⏰&nbsp;<span id="timer-display">01:00</span></div>
 
-  <!-- Reading passage: transparent overlay inside the white card in PNG -->
-  <div class="reading-card" id="reading-area"></div>
+  <div class="countdown-overlay" id="countdown-overlay">
+    <div class="countdown-number" id="countdown-num">3</div>
+  </div>
 
-  <!-- Typing input: transparent, overlays the yellow input bar in PNG -->
-  <input
-    type="text" id="game-input" class="typing-input"
-    placeholder="Gõ từng chữ vào đây, nhấn Space để tiếp…"
-    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-  >
+  <div class="timer-wrap" id="timer-wrap">
+    &#9200;&nbsp;<span id="timer-display">01:00</span>
+  </div>
 
-  <!-- Words-typed counter: overlays the small box in PNG -->
-  <div class="words-typed-num" id="counter-value">0</div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-fill"></div>
+  </div>
 
-  <!-- Invisible hotspot covering the ✕ icon drawn in Game.png -->
-  <button class="btn-close-hotspot" onclick="backToMain()" title="Thoát"></button>
+  <div class="passage-card" id="reading-area"></div>
+
+  <div class="error-toast" id="error-toast">
+    &#10060;&nbsp;Sai rồi! Đánh lại từ đó nha.
+  </div>
+
+  <div class="game-bottom">
+    <input
+      type="text" id="game-input" class="typing-input"
+      placeholder="Gõ từng chữ, nhấn Space để tiếp tục..."
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+    >
+    <div class="counter-box">
+      <div class="counter-num" id="counter-value">0</div>
+      <div class="counter-lbl">Correct</div>
+    </div>
+  </div>
+
+  <button class="btn-close-hotspot" onclick="backToMain()" title="Quit"></button>
 </div>
 
 
 <!-- ════ SCREEN 3 — RESULT ════ -->
 <div id="s-result" class="screen">
-  <!-- Score number: rendered inside the white score box in Result.png -->
-  <div class="result-score-num">
-    <span id="result-number">0</span>
-    <span class="result-score-sub">từ chính xác</span>
+  <div class="result-score-wrap">
+    <div class="result-score-num" id="result-number">0</div>
+    <div class="result-score-sub">correct words &nbsp;/&nbsp; 60 seconds</div>
   </div>
 
-  <!-- Claim button: transparent hotspot over the orange bar in Result.png -->
-  <button class="btn-claim" id="btn-claim" onclick="showGiftScreen()">
-    Hãy nhận quà ngay &nbsp;›
-  </button>
-
-  <!-- Retry button (< 30 words): replaces claim button with a visible blue button -->
-  <button class="btn-retry" id="btn-retry" onclick="backToMain()">
-    ↻&nbsp; THỬ LẠI
-  </button>
+  <div class="result-btn-row">
+    <button class="btn-claim hidden" id="btn-claim" onclick="showGiftScreen()">
+      &#127873;&nbsp; Claim Your Gift &rsaquo;
+    </button>
+    <button class="btn-next" id="btn-next" onclick="show('s-finish')">
+      Next &rsaquo;
+    </button>
+  </div>
 </div>
 
 
 <!-- ════ SCREEN 4 — GIFT ════ -->
 <div id="s-gift" class="screen">
   <div class="gift-form-panel">
+
     <div class="form-group">
-      <label class="form-label">👤 Họ và tên</label>
-      <input type="text" id="form-name" class="form-input"
-             placeholder="Nhập họ và tên của bạn" required>
+      <label class="form-label">Họ và tên</label>
+      <div class="form-input-wrap">
+        <span class="form-input-icon">👤</span>
+        <input type="text" id="form-name" class="form-input" placeholder="Nhập họ và tên của bạn">
+      </div>
     </div>
+
     <div class="form-group">
-      <label class="form-label">✉️ Email</label>
-      <input type="email" id="form-email" class="form-input"
-             placeholder="Nhập email của bạn" required>
+      <label class="form-label">Email</label>
+      <div class="form-input-wrap">
+        <span class="form-input-icon">✉️</span>
+        <input type="email" id="form-email" class="form-input" placeholder="Nhập email của bạn">
+      </div>
     </div>
+
     <div class="form-group">
-      <label class="form-label">📱 Số điện thoại</label>
-      <input type="tel" id="form-phone" class="form-input"
-             placeholder="Nhập số điện thoại">
+      <label class="form-label">Số điện thoại</label>
+      <div class="form-input-wrap">
+        <span class="form-input-icon">📞</span>
+        <input type="tel" id="form-phone" class="form-input" placeholder="Nhập số điện thoại của bạn">
+      </div>
     </div>
-    <div class="form-group" style="flex:1.5">
-      <label class="form-label">💬 Ghi chú</label>
-      <textarea id="form-note" class="form-input"
-                placeholder="Câu hỏi hoặc ghi chú của bạn…"></textarea>
+
+    <div class="form-group">
+      <label class="form-label">Câu hỏi hoặc ghi chú khác</label>
+      <div class="form-input-wrap">
+        <span class="form-input-icon" style="align-self:flex-start;margin-top:clamp(6px,1vh,10px)">💬</span>
+        <textarea id="form-note" class="form-input" placeholder="Nhập câu hỏi hoặc ghi chú của bạn"></textarea>
+      </div>
     </div>
-    <button class="btn-hoan-tat" onclick="submitGift()">HOÀN TẤT &nbsp;›</button>
+
+    <button class="btn-hoan-tat" onclick="submitGift()">HOÀN TẤT &nbsp;&rsaquo;</button>
+
   </div>
 </div>
 
@@ -414,8 +510,8 @@ textarea.form-input{resize:none}
 <!-- ════ SCREEN 5 — FINISH ════ -->
 <div id="s-finish" class="screen">
   <div class="finish-buttons">
-    <button class="btn-play-again" onclick="backToMain()">↻&nbsp; PLAY AGAIN</button>
-    <button class="btn-home-btn"   onclick="goHome()">🏠&nbsp; VỀ TRANG CHỦ</button>
+    <button class="btn-play-again" onclick="backToMain()">Play Again</button>
+    <button class="btn-home-btn" onclick="goHome()">Home</button>
   </div>
 </div>
 
@@ -423,158 +519,283 @@ textarea.form-input{resize:none}
 
 
 <script>
-/* ─── Paragraph pool ─── */
+/* ── Paragraphs (no punctuation for clean word matching) ── */
 const PARAGRAPHS = [
-  "Every morning, Beelo the little bee wakes up early to begin a brand-new day full of adventure and learning. Beelo loves flying around the garden, visiting colorful flowers, and meeting friendly animals along the way. As Beelo explores nature, he discovers new things about plants, trees, and the world around him. He believes that every day is a wonderful opportunity to learn, create, and grow. Whether it is trying something new, helping a friend, or practicing an important skill, Beelo always gives his best effort. He knows that with patience, determination, and a positive attitude, anyone can achieve great things and turn small dreams into amazing accomplishments.",
-  "One sunny day, Beelo and his rainbow friends set out on a magical journey to collect colors from around the world. They traveled across green fields, sparkling rivers, and beautiful forests filled with singing birds. Along the way, they faced exciting challenges that taught them about friendship, teamwork, and courage. Whenever they encountered a problem, they worked together to find a solution and encouraged one another to keep going. As they continued their adventure, they gathered bright colors from every place they visited. By the end of the journey, they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere.",
-  "Today is the biggest creative festival of the year, and Beelo is excited to welcome children from all over the world. The festival is filled with fun activities such as drawing, coloring, storytelling, and creating wonderful art projects. Every child brings unique ideas and imagination to share with others. Some children draw beautiful forests, while others create colorful oceans, magical castles, or even planets in outer space. Beelo encourages everyone to express themselves freely because every idea is valuable and special. Throughout the day, children learn that creativity grows when they are confident, curious, and willing to try new things. By the end of the festival, everyone leaves with happy memories, new friends, and inspiration to continue exploring their creativity every day."
+  "Every morning Beelo the little bee wakes up early to begin a brand-new day full of adventure and learning Beelo loves flying around the garden visiting colorful flowers and meeting friendly animals along the way As Beelo explores nature he discovers new things about plants trees and the world around him He believes that every day is a wonderful opportunity to learn create and grow Whether it is trying something new helping a friend or practicing an important skill Beelo always gives his best effort He knows that with patience determination and a positive attitude anyone can achieve great things and turn small dreams into amazing accomplishments",
+  "One sunny day Beelo and his rainbow friends set out on a magical journey to collect colors from around the world They traveled across green fields sparkling rivers and beautiful forests filled with singing birds Along the way they faced exciting challenges that taught them about friendship teamwork and courage Whenever they encountered a problem they worked together to find a solution and encouraged one another to keep going As they continued their adventure they gathered bright colors from every place they visited By the end of the journey they had collected enough colors to create a magnificent rainbow that brought joy and happiness to children everywhere",
+  "Today is the biggest creative festival of the year and Beelo is excited to welcome children from all over the world The festival is filled with fun activities such as drawing coloring storytelling and creating wonderful art projects Every child brings unique ideas and imagination to share with others Some children draw beautiful forests while others create colorful oceans magical castles or even planets in outer space Beelo encourages everyone to express themselves freely because every idea is valuable and special Throughout the day children learn that creativity grows when they are confident curious and willing to try new things By the end of the festival everyone leaves with happy memories new friends and inspiration to continue exploring their creativity every day"
 ];
 
-/* ─── Game state ─── */
-let state = { words:[], idx:0, correct:0, timeLeft:60, active:false, timer:null };
+/* ── State ── */
+let state = {
+  words:[], idx:0, correct:0,
+  timeLeft:60, active:false,
+  timer:null, errorTimer:null
+};
 
-/* ─── Screen helper ─── */
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+/* ── Screens ── */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function backToMain() {
-  state.active = false;
+function backToMain(){
+  state.active=false;
   clearInterval(state.timer);
-  const inp = document.getElementById('game-input');
-  inp.value = '';
-  inp.classList.remove('error');
+  clearTimeout(state.errorTimer);
+  const inp=document.getElementById('game-input');
+  inp.value=''; inp.classList.remove('error');
+  hideErrorToast();
+  document.getElementById('countdown-overlay').classList.remove('active');
   show('s-main');
 }
 
-function goHome() { window.location.href = 'index.html'; }
+function goHome(){ window.location.href='index.html'; }
 
-/* ─── Start ─── */
-function startGame() {
-  const para = PARAGRAPHS[Math.floor(Math.random() * PARAGRAPHS.length)];
-  state.words   = para.split(/\s+/);
-  state.idx     = 0;
-  state.correct = 0;
-  state.timeLeft= 60;
-  state.active  = true;
+
+/* ════════════════════════
+   COUNTDOWN  3→2→1→GO!
+   ════════════════════════ */
+function beginCountdown(){
+  const para=PARAGRAPHS[Math.floor(Math.random()*PARAGRAPHS.length)];
+  state.words=para.split(/\s+/);
+  state.idx=0; state.correct=0; state.timeLeft=60; state.active=false;
 
   renderPassage();
-  updateCounter(0);
+  document.getElementById('counter-value').textContent='0';
   updateTimerUI();
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('timer-wrap').classList.remove('urgent');
   show('s-game');
-  document.getElementById('game-input').focus();
 
-  state.timer = setInterval(() => {
-    state.timeLeft--;
-    updateTimerUI();
-    if (state.timeLeft <= 0) endGame();
-  }, 1000);
-}
+  const overlay=document.getElementById('countdown-overlay');
+  const numEl  =document.getElementById('countdown-num');
+  overlay.classList.add('active');
 
-/* ─── Timer ─── */
-function updateTimerUI() {
-  const m = String(Math.floor(state.timeLeft / 60)).padStart(2, '0');
-  const s = String(state.timeLeft % 60).padStart(2, '0');
-  document.getElementById('timer-display').textContent = `${m}:${s}`;
-}
-
-/* ─── Passage renderer ─── */
-function renderPassage() {
-  const area = document.getElementById('reading-area');
-  area.innerHTML = state.words.map((w, i) => {
-    let cls = 'word';
-    if      (i < state.idx)  cls += ' correct';
-    else if (i === state.idx) cls += ' current';
-    return `<span class="${cls}">${w}</span>`;
-  }).join(' ');
-  const cur = area.querySelector('.current');
-  if (cur) cur.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-}
-
-/* ─── Counter ─── */
-function updateCounter(n) {
-  document.getElementById('counter-value').textContent = n;
-}
-
-/* ─── Submit word (Space / Enter) ─── */
-function submitWord(typed) {
-  if (!typed || state.idx >= state.words.length) return;
-  if (typed.toLowerCase() === state.words[state.idx].toLowerCase()) {
-    state.correct++;
-    updateCounter(state.correct);
+  const steps=['3','2','1','GO!'];
+  let step=0;
+  function tick(){
+    numEl.className='countdown-number'+(steps[step]==='GO!'?' go':'');
+    numEl.textContent=steps[step];
+    numEl.style.animation='none';
+    void numEl.offsetWidth;
+    numEl.style.animation='';
+    step++;
+    if(step<steps.length){ setTimeout(tick,900); }
+    else{ setTimeout(()=>{ overlay.classList.remove('active'); startGame(); },700); }
   }
-  state.idx++;
-  renderPassage();
-  const inp = document.getElementById('game-input');
-  inp.value = '';
-  inp.classList.remove('error');
-  inp.focus();
-  if (state.idx >= state.words.length) endGame();
+  tick();
 }
 
-/* ─── End game ─── */
-function endGame() {
-  state.active = false;
-  clearInterval(state.timer);
-  document.getElementById('result-number').textContent = state.correct;
 
-  const claimBtn = document.getElementById('btn-claim');
-  const retryBtn = document.getElementById('btn-retry');
-  if (state.correct >= 30) {
+/* ════════════════════════
+   GAME START / TIMER
+   ════════════════════════ */
+function startGame(){
+  state.active=true;
+  document.getElementById('game-input').focus();
+  state.timer=setInterval(()=>{
+    state.timeLeft--;
+    updateTimerUI(); updateProgressBar();
+    if(state.timeLeft<=10) document.getElementById('timer-wrap').classList.add('urgent');
+    if(state.timeLeft<=0)  endGame();
+  },1000);
+}
+
+function updateTimerUI(){
+  const m=String(Math.floor(state.timeLeft/60)).padStart(2,'0');
+  const s=String(state.timeLeft%60).padStart(2,'0');
+  document.getElementById('timer-display').textContent=`${m}:${s}`;
+}
+
+function updateProgressBar(){
+  document.getElementById('progress-fill').style.width=(state.timeLeft/60*100)+'%';
+}
+
+
+/* ════════════════════════
+   PASSAGE RENDER
+   ════════════════════════ */
+function renderPassage(){
+  const area=document.getElementById('reading-area');
+  area.innerHTML=state.words.map((w,i)=>{
+    let cls='word';
+    if(i<state.idx)        cls+=' correct';
+    else if(i===state.idx) cls+=' current';
+    return `<span class="${cls}" data-i="${i}">${w}</span>`;
+  }).join(' ');
+  const cur=area.querySelector('.current');
+  if(cur) cur.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+
+/* ════════════════════════
+   WORD SUBMISSION — Space
+   ════════════════════════
+   Design:
+   ✓ Correct → advance idx immediately, re-render, pop animation on just-done word
+   ✗ Wrong   → flash current word red, show toast, clear input, don't advance
+*/
+function submitWord(typed){
+  if(!state.active || !typed || state.idx>=state.words.length) return;
+
+  /* Triple-guarantee: clear input here too so no stale text ever lingers */
+  const inp=document.getElementById('game-input');
+  inp.value='';
+  inp.classList.remove('error');
+
+  const target=state.words[state.idx];
+
+  if(typed.toLowerCase()===target.toLowerCase()){
+    /* ✓ CORRECT — advance state immediately, no blocking */
+    state.correct++;
+    state.idx++;
+    document.getElementById('counter-value').textContent=state.correct;
+    hideErrorToast();
+
+    /* Re-render: completed word gets .correct, new word gets .current */
+    renderPassage();
+
+    /* Add pop animation to the just-completed word */
+    const justDone=document.querySelector(`#reading-area .word[data-i="${state.idx-1}"]`);
+    if(justDone){
+      justDone.classList.add('just-accepted');
+      setTimeout(()=>{ justDone.classList.remove('just-accepted'); },420);
+    }
+
+    /* Focus + clear after render — requestAnimationFrame beats Chrome's value restore */
+    requestAnimationFrame(()=>{
+      const i=document.getElementById('game-input');
+      i.value='';
+      i.focus();
+    });
+
+    if(state.idx>=state.words.length) endGame();
+
+  } else {
+    /* ✗ WRONG — flash red, toast, clear input, stay on same word */
+    const span=document.querySelector(`#reading-area .word[data-i="${state.idx}"]`);
+    if(span){
+      span.classList.remove('current');
+      span.classList.add('wrong');
+      clearTimeout(state.errorTimer);
+      state.errorTimer=setTimeout(()=>{
+        span.classList.remove('wrong');
+        span.classList.add('current');
+      },600);
+    }
+    const inp=document.getElementById('game-input');
+    inp.classList.add('error');
+    showErrorToast();
+    clearTimeout(state.errorTimer);
+    state.errorTimer=setTimeout(()=>{
+      inp.classList.remove('error');
+      hideErrorToast();
+    },1200);
+  }
+}
+
+function showErrorToast(){ document.getElementById('error-toast').classList.add('show'); }
+function hideErrorToast(){ document.getElementById('error-toast').classList.remove('show'); }
+
+
+/* ════════════════════════
+   END GAME
+   ════════════════════════ */
+function endGame(){
+  state.active=false;
+  clearInterval(state.timer);
+  clearTimeout(state.errorTimer);
+  hideErrorToast();
+
+  document.getElementById('result-number').textContent=state.correct;
+
+  const claimBtn=document.getElementById('btn-claim');
+  const nextBtn =document.getElementById('btn-next');
+  if(state.correct>=30){
     claimBtn.classList.remove('hidden');
-    retryBtn.classList.remove('visible');
+    nextBtn.classList.remove('visible'); nextBtn.style.display='none';
   } else {
     claimBtn.classList.add('hidden');
-    retryBtn.classList.add('visible');
+    nextBtn.classList.add('visible');
   }
   show('s-result');
 }
 
-/* ─── Gift screen ─── */
-function showGiftScreen() {
-  const n = state.correct;
-  let bg = 'game-assets/Gift%201.png';
-  if      (n >= 90) bg = 'game-assets/Gift%203.png';
-  else if (n >= 60) bg = 'game-assets/Gift%202.png';
-  document.getElementById('s-gift').style.backgroundImage = `url('${bg}')`;
-  ['form-name','form-email','form-phone','form-note'].forEach(id => {
-    document.getElementById(id).value = '';
+
+/* ════════════════════════
+   GIFT SCREEN
+   ════════════════════════ */
+function showGiftScreen(){
+  const n=state.correct;
+  const img=(n>=90)?'Gift%203.png':(n>=60)?'Gift%202.png':'Gift%201.png';
+  document.getElementById('s-gift').style.backgroundImage=
+    `url('../cdn.shopify.com/s/game_img/${img}')`;
+  ['form-name','form-email','form-phone','form-note'].forEach(id=>{
+    document.getElementById(id).value='';
   });
   show('s-gift');
 }
 
-/* ─── Submit gift form ─── */
-function submitGift() {
-  const name  = document.getElementById('form-name').value.trim();
-  const email = document.getElementById('form-email').value.trim();
-  if (!name || !email) {
-    alert('Vui lòng điền đầy đủ họ tên và email!');
-    return;
+function submitGift(){
+  const name =document.getElementById('form-name').value.trim();
+  const email=document.getElementById('form-email').value.trim();
+  if(!name){ alert('Please enter your name!'); document.getElementById('form-name').focus(); return; }
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert('Please enter a valid email!'); document.getElementById('form-email').focus(); return;
   }
   show('s-finish');
 }
 
-/* ─── Keyboard handling ─── */
-document.addEventListener('DOMContentLoaded', () => {
-  const inp = document.getElementById('game-input');
 
-  inp.addEventListener('keydown', e => {
-    if (!state.active) return;
-    if (e.key === ' ' || e.key === 'Enter') {
+/* ════════════════════════
+   INPUT EVENTS
+   ════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('game-input');
+
+  /* ── Space → submit ──
+     keydown: capture space before it enters the field.
+     We read value, immediately blank it, then submit.
+     After submit we use requestAnimationFrame to blank+refocus again —
+     this beats macOS Chrome's undo-stack value restoration that can
+     re-insert the previous text after a programmatic .focus() call. */
+  inp.addEventListener('keydown',e=>{
+    if(!state.active) return;
+    if(e.key===' '){
       e.preventDefault();
-      submitWord(inp.value.trim());
+      e.stopPropagation();
+      const typed=inp.value.trim();
+      inp.value='';
+      inp.classList.remove('error');
+      if(typed) submitWord(typed);
+      /* Beat macOS Chrome value-restore on next paint */
+      requestAnimationFrame(()=>{ inp.value=''; });
     }
   });
 
-  inp.addEventListener('input', () => {
-    if (!state.active) return;
-    const typed  = inp.value.trim();
-    const target = state.words[state.idx] || '';
-    if (typed && !target.toLowerCase().startsWith(typed.toLowerCase()))
+  /* Belt-and-suspenders: strip any space that slipped past keydown */
+  inp.addEventListener('keyup',e=>{
+    if(e.key===' ') inp.value=inp.value.replace(/\s+/g,'');
+  });
+
+  /* Real-time red border when prefix doesn't match */
+  inp.addEventListener('input',()=>{
+    if(!state.active) return;
+    const typed =inp.value;
+    const target=(state.words[state.idx]||'').toLowerCase();
+    if(typed && !target.startsWith(typed.toLowerCase())){
       inp.classList.add('error');
-    else
+    } else {
       inp.classList.remove('error');
+    }
+  });
+
+  /* Click anywhere on game screen → refocus input */
+  document.getElementById('s-game').addEventListener('click',e=>{
+    if(state.active && e.target!==document.querySelector('.btn-close-hotspot')){
+      inp.focus();
+    }
   });
 });
 </script>
