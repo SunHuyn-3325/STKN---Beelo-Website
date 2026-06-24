@@ -1056,145 +1056,146 @@
       highlightCurrentWord();
     }
 
-    /* ============================================================
-       END GAME
-    ============================================================ */
-    function endGame() {
-      clearInterval(state.timer);
-      state.gameActive = false;
+    /* Focus + clear after render — requestAnimationFrame beats Chrome's value restore */
+    requestAnimationFrame(()=>{
+      const i=document.getElementById('game-input');
+      i.value='';
+      i.focus();
+    });
 
-      // Disable input
-      const input = document.getElementById('typing-input');
-      input.disabled = true;
-      input.placeholder = 'Hết giờ!';
+    if(state.idx>=state.words.length) endGame();
 
-      // Brief delay before showing result
-      setTimeout(showResult, 600);
+  } else {
+    /* ✗ WRONG — flash red, toast, clear input, stay on same word */
+    const span=document.querySelector(`#reading-area .word[data-i="${state.idx}"]`);
+    if(span){
+      span.classList.remove('current');
+      span.classList.add('wrong');
+      clearTimeout(state.errorTimer);
+      state.errorTimer=setTimeout(()=>{
+        span.classList.remove('wrong');
+        span.classList.add('current');
+      },600);
     }
+    const inp=document.getElementById('game-input');
+    inp.classList.add('error');
+    showErrorToast();
+    clearTimeout(state.errorTimer);
+    state.errorTimer=setTimeout(()=>{
+      inp.classList.remove('error');
+      hideErrorToast();
+    },1200);
+  }
+}
 
-    function getRewardTier(score) {
-      if (score >= 90) return REWARDS.level3;
-      if (score >= 60) return REWARDS.level2;
-      if (score >= 30) return REWARDS.level1;
-      return REWARDS.none;
-    }
+function showErrorToast(){ document.getElementById('error-toast').classList.add('show'); }
+function hideErrorToast(){ document.getElementById('error-toast').classList.remove('show'); }
 
-    function showResult() {
-      const score = state.correctCount;
-      const reward = getRewardTier(score);
-      state.finalReward = reward;
 
-      // Badge
-      const badge = document.getElementById('result-badge');
-      badge.className = `result-badge ${reward.badgeClass}`;
-      badge.textContent = reward.emoji;
+/* ════════════════════════
+   END GAME
+   ════════════════════════ */
+function endGame(){
+  state.active=false;
+  clearInterval(state.timer);
+  clearTimeout(state.errorTimer);
+  hideErrorToast();
+  /* Lower bg volume while win jingle plays, restore after */
+  SFX.bg.volume = 0.12;
+  SFX.win.currentTime = 0;
+  SFX.win.play().catch(()=>{});
+  SFX.win.onended = () => { SFX.bg.volume = 0.35; };
 
-      // Headline
-      document.getElementById('result-headline').textContent = reward.headline;
+  document.getElementById('result-number').textContent=state.correct;
 
-      // Score
-      document.getElementById('result-score').textContent = score;
+  const claimBtn=document.getElementById('btn-claim');
+  const nextBtn =document.getElementById('btn-next');
+  if(state.correct>=30){
+    claimBtn.classList.remove('hidden');
+    nextBtn.classList.remove('visible'); nextBtn.style.display='none';
+  } else {
+    claimBtn.classList.add('hidden');
+    nextBtn.classList.add('visible');
+  }
+  show('s-result');
+}
 
-      // Reward box
-      const box = document.getElementById('reward-box');
-      if (reward.level !== 'none') {
-        document.getElementById('reward-level-name').textContent = reward.levelName;
-        document.getElementById('reward-desc').textContent = reward.desc;
-        const ul = document.getElementById('reward-items');
-        ul.innerHTML = reward.items.map(item => `<li>${item}</li>`).join('');
-        box.style.display = 'block';
-      } else {
-        box.style.display = 'none';
-        // Add encouraging message
-        document.getElementById('result-headline').textContent =
-          `Cố lên! Bạn gõ được ${score} từ 💪`;
-      }
 
-      // Claim button
-      const claimBtn = document.getElementById('btn-claim');
-      claimBtn.style.display = reward.showClaim ? 'inline-flex' : 'none';
+/* ════════════════════════
+   GIFT SCREEN
+   ════════════════════════ */
+function showGiftScreen(){
+  const n=state.correct;
+  const img=(n>=90)?'Gift%203.png':(n>=60)?'Gift%202.png':'Gift%201.png';
+  document.getElementById('s-gift').style.backgroundImage=
+    `url('../cdn.shopify.com/s/game_img/${img}')`;
+  ['form-name','form-email','form-phone','form-note'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  show('s-gift');
+}
 
-      // Populate claim screen
-      if (reward.showClaim) {
-        document.getElementById('claim-reward-name').textContent = reward.levelName;
-        document.getElementById('reward-reminder').innerHTML =
-          `🎁 Phần thưởng của bạn: <strong>${reward.levelName}</strong><br>
-           📊 Số từ gõ đúng: <strong style="color:var(--green)">${score} từ</strong>`;
-      }
+function submitGift(){
+  const name =document.getElementById('form-name').value.trim();
+  const email=document.getElementById('form-email').value.trim();
+  if(!name){ alert('Please enter your name!'); document.getElementById('form-name').focus(); return; }
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert('Please enter a valid email!'); document.getElementById('form-email').focus(); return;
+  }
+  show('s-finish');
+}
 
-      showScreen('screen-result');
-    }
 
-    /* ============================================================
-       CLAIM FORM SUBMIT
-    ============================================================ */
-    function submitClaim(e) {
+/* ════════════════════════
+   INPUT EVENTS
+   ════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('game-input');
+
+  /* ── Space → submit ──
+     keydown: capture space before it enters the field.
+     We read value, immediately blank it, then submit.
+     After submit we use requestAnimationFrame to blank+refocus again —
+     this beats macOS Chrome's undo-stack value restoration that can
+     re-insert the previous text after a programmatic .focus() call. */
+  inp.addEventListener('keydown',e=>{
+    if(!state.active) return;
+    if(e.key===' '){
       e.preventDefault();
-
-      const name  = document.getElementById('field-name').value.trim();
-      const email = document.getElementById('field-email').value.trim();
-      const phone = document.getElementById('field-phone').value.trim();
-
-      if (!name || !email || !phone) {
-        alert('Vui lòng điền đầy đủ Họ tên, Email và Số điện thoại nhé! 😊');
-        return;
-      }
-
-      // Populate thank-you screen
-      document.getElementById('thanks-words').textContent = `${state.correctCount} từ`;
-      document.getElementById('thanks-level').textContent = state.finalReward?.levelName || '';
-
-      showScreen('screen-thanks');
+      e.stopPropagation();
+      const typed=inp.value.trim();
+      inp.value='';
+      inp.classList.remove('error');
+      if(typed) submitWord(typed);
+      /* Beat macOS Chrome value-restore on next paint */
+      requestAnimationFrame(()=>{ inp.value=''; });
     }
+  });
 
-    /* ============================================================
-       RESTART
-    ============================================================ */
-    function restartGame() {
-      // Reset form
-      document.getElementById('claim-form').reset();
-      // Clear any typing state
-      clearInterval(state.timer);
-      state.gameActive = false;
-      startCountdown();
+  /* Belt-and-suspenders: strip any space that slipped past keydown */
+  inp.addEventListener('keyup',e=>{
+    if(e.key===' ') inp.value=inp.value.replace(/\s+/g,'');
+  });
+
+  /* Real-time red border when prefix doesn't match */
+  inp.addEventListener('input',()=>{
+    if(!state.active) return;
+    const typed =inp.value;
+    const target=(state.words[state.idx]||'').toLowerCase();
+    if(typed && !target.startsWith(typed.toLowerCase())){
+      inp.classList.add('error');
+    } else {
+      inp.classList.remove('error');
     }
+  });
 
-    /* ============================================================
-       AUDIO
-    ============================================================ */
-    const SFX = {
-      bg:    new Audio('../cdn.shopify.com/s/audio/nh%E1%BA%A1c%20n%E1%BB%81n.mp3'),
-      click: new Audio('../cdn.shopify.com/s/audio/click%20game.mp3'),
-      win:   new Audio('../cdn.shopify.com/s/audio/win_game.mp3'),
-    };
-    SFX.bg.loop = true;
-    SFX.bg.volume = 0.35;
-    SFX.click.volume = 0.7;
-    SFX.win.volume = 0.9;
-
-    /* Start bg on first interaction (browser autoplay policy) */
-    let _bgStarted = false;
-    document.addEventListener('click', () => {
-      if (!_bgStarted) { _bgStarted = true; SFX.bg.play().catch(()=>{}); }
-    }, { once: true });
-
-    /* Click sound on every button */
-    document.addEventListener('click', e => {
-      if (e.target.closest('button')) {
-        SFX.click.currentTime = 0;
-        SFX.click.play().catch(()=>{});
-      }
-    }, true);
-
-    /* Hook into endGame to play win jingle (duck bg) */
-    const _origEndGame = endGame;
-    window.endGame = function() {
-      _origEndGame();
-      SFX.bg.volume = 0.12;
-      SFX.win.currentTime = 0;
-      SFX.win.play().catch(()=>{});
-      SFX.win.onended = () => { SFX.bg.volume = 0.35; };
-    };
-  </script>
+  /* Click anywhere on game screen → refocus input */
+  document.getElementById('s-game').addEventListener('click',e=>{
+    if(state.active && e.target!==document.querySelector('.btn-close-hotspot')){
+      inp.focus();
+    }
+  });
+});
+</script>
 </body>
 </html>
